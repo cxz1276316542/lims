@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.InstrumentMethodMapper">
+
+    <resultMap type="InstrumentMethodVo" id="InstrumentMethodResult">
+        <id property="instrumentDetectionMethodID" column="JCFF_JCYQ_ID"/>
+        <result property="instrumentID"    column="JCYQ_ID"    />
+        <result property="purchaserID"    column="CGY_ID"    />
+        <result property="purchaserName"    column="YH_NC"    />
+        <result property="instrumentNumber"    column="JCYQ_BH"    />
+        <result property="instrumentName"    column="JCYQ_MC"    />
+        <result property="manufacturer"    column="JCYQ_SCCJ"    />
+        <result property="launchDate"    column="JCYQ_QYRQ"    />
+        <result property="purchaseDate"    column="JCYQ_CGRQ"    />
+        <result property="status"    column="JCYQ_ZT"    />
+
+        <result property="detectionMethodID"    column="JCFF_ID"    />
+        <result property="detectionMethodName"    column="JCFF_MC"    />
+        <result property="detectionMethodInfo"    column="JCFF_CZMS"    />
+        <result property="detectionMethodURL"    column="JCFF_DZ"    />
+        <result property="detectionCenterID"    column="JCZX_ID"    />
+        <result property="isValid"    column="SJYXX_BS"    />
+    </resultMap>
+
+    <sql id="selectInstrumentMethodVo">
+        select ffyq.JCFF_JCYQ_ID, ffyq.JCZX_ID, ffyq.SJYXX_BS,
+        yq.JCYQ_ID, yq.CGY_ID, yq.JCYQ_BH, yq.JCYQ_SCCJ, yq.JCYQ_MC ,yq.JCYQ_QYRQ,yq.JCYQ_CGRQ,yq.JCYQ_ZT,
+        ff.JCFF_ID,ff.JCFF_MC,ff.JCFF_CZMS,ff.JCFF_DZ,
+        yh.YH_ID,yh.YH_NC
+        from xlk_jcff_jcyq as ffyq left join xlk_jcyq as yq on ffyq.JCYQ_ID = yq.JCYQ_ID
+        left join xlk_jcff as ff on ffyq.JCFF_ID = ff.JCFF_ID
+        left join xt_yh as yh on yq.CGY_ID = yh.YH_ID
+    </sql>
+
+    <select id="selectInstrumentMethodList" parameterType="InstrumentMethodVo" resultMap="InstrumentMethodResult">
+        <include refid="selectInstrumentMethodVo"/>
+        <where>
+            <if test="instrumentDetectionMethodID != null "> and JCFF_JCYQ_ID = #{instrumentDetectionMethodID}</if>
+            <if test="instrumentID != null "> and JCYQ_ID = #{instrumentID}</if>
+            <if test="purchaserID != null "> and CGY_ID = #{purchaserID}</if>
+            <if test="purchaserName != null and purchaserName != ''"> and YH_NC = #{purchaserName}</if>
+            <if test="instrumentNumber != null  and instrumentNumber != ''"> and JCYQ_BH like concat('%',#{instrumentNumber},'%')</if>
+            <if test="instrumentName != null  and instrumentName != ''"> and JCYQ_MC like concat('%',#{instrumentName},'%')</if>
+            <if test="manufacturer != null  and manufacturer != ''"> and JCYQ_SCCJ like concat('%',#{manufacturer},'%') </if>
+            <if test="launchDate != null "> and JCYQ_QYRQ = #{launchDate}</if>
+            <if test="purchaseDate != null "> and JCYQ_CGRQ = #{purchaseDate}</if>
+            <if test="status != null "> and JCYQ_ZT = #{status}</if>
+            <if test="detectionMethodID != null "> and JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionMethodName != null  and detectionMethodName != ''"> and JCFF_MC like concat('%',#{detectionMethodName},'%') </if>
+            <if test="detectionMethodInfo != null  and detectionMethodInfo != ''"> and JCFF_CZMS like concat('%',#{detectionMethodInfo},'%') </if>
+            <if test="detectionMethodURL != null  and detectionMethodURL != ''"> and JCFF_DZ like concat('%',#{detectionMethodURL},'%') </if>
+            <if test="detectionCenterID != null "> and ffyq.JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null "> and ffyq.SJYXX_BS = #{isValid}</if>
+        </where>
+        order by JCYQ_BH desc
+    </select>
+
+    <select id="selectInstrumentMethodById" resultMap="InstrumentMethodResult">
+        <include refid="selectInstrumentMethodVo"/>
+        <where>
+            <if test="instrumentDetectionMethodID != null "> JCFF_JCYQ_ID = #{instrumentDetectionMethodID}</if>
+            <if test="detectionCenterID != null "> and ffyq.JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <insert id="insertInstrumentMethod" parameterType="InstrumentMethodVo" useGeneratedKeys="true" keyProperty="instrumentDetectionMethodID">
+        insert into xlk_jcff_jcyq
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="detectionMethodID != null">JCFF_ID,</if>
+            <if test="instrumentID != null">JCYQ_ID,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="detectionMethodID != null">#{detectionMethodID},</if>
+            <if test="instrumentID != null">#{instrumentID},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInstrumentMethod" parameterType="InstrumentMethodVo">
+        update xlk_jcff_jcyq
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="instrumentID != null">JCYQ_ID = #{instrumentID},</if>
+            <if test="detectionMethodID != null ">JCFF_ID = #{detectionMethodID},</if>
+            <if test="detectionCenterID != null ">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid},</if>
+        </trim>
+        <where>
+            <if test="instrumentDetectionMethodID != null ">JCFF_JCYQ_ID = #{instrumentDetectionMethodID}</if>
+            <if test="instrumentID != null">and JCYQ_ID = #{instrumentID}</if>
+            <if test="detectionMethodID != null ">and JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </update>
+
+
+    <!--<delete id="deleteInstrumentMethodByInstrumentId" parameterType="Long">
+        delete from xlk_jcff_jcyq where JCYQ_ID = #{instrumentID}
+    </delete>-->
+    <delete id="deleteInstrumentMethodByInstrumentIds" >
+        delete from xlk_jcff_jcyq where JCZX_ID = #{detectionCenterID} and JCYQ_ID in
+        <foreach item="instrumentID" collection="instrumentIDs" open="(" separator="," close=")">
+            #{instrumentID}
+        </foreach>
+    </delete>
+
+    <!--<delete id="deleteInstrumentMethodByDetectionMethodId" parameterType="Long">
+        delete from xlk_jcff_jcyq where JCFF_ID = #{detectionMethodID}
+    </delete>-->
+    <delete id="deleteInstrumentMethodByDetectionMethodIds" parameterType="String">
+        delete from xlk_jcff_jcyq where JCZX_ID = #{detectionCenterID} and JCFF_ID in
+        <foreach item="detectionMethodID" collection="detectionMethodIDs" open="(" separator="," close=")">
+            #{detectionMethodID}
+        </foreach>
+    </delete>
+
+    <!--<delete id="deleteInstrumentMethodById" parameterType="InstrumentMethodVo">
+        delete from xlk_jcff_jcyq where JCFF_ID = #{detectionMethodID} and JCYQ_ID = #{instrumentID}
+    </delete>-->
+
+    <delete id="deleteInstrumentMethodByIds" >
+        delete from xlk_jcff_jcyq where JCZX_ID = #{detectionCenterID} and JCFF_JCYQ_ID in
+        <foreach item="instrumentDetectionMethodID" collection="instrumentDetectionMethodIDs" open="(" separator="," close=")">
+            #{instrumentDetectionMethodID}
+        </foreach>
+    </delete>
+
+    <!--查询检测仪器-检测方法是否存在-->
+    <select id="selectInstrumentDetectionMethod" parameterType="InstrumentMethodVo" resultMap="InstrumentMethodResult">
+        select JCYQ_ID,JCFF_ID from xlk_jcff_jcyq
+        <where>
+            <if test="instrumentID != null "> and JCYQ_ID = #{instrumentID}</if>
+            <if test="detectionMethodID != null "> and JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionCenterID != null "> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+</mapper>

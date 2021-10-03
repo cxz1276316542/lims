@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysRoleMapper">
+
+	<resultMap type="SysRole" id="SysRoleResult">
+		<id     property="roleId"             column="JS_ID"               />
+		<result property="roleName"           column="JS_MC"             />
+		<result property="roleKey"            column="JS_QX"              />
+		<result property="roleSort"           column="JS_XSSX"             />
+		<result property="dataScope"          column="JS_SJY"            />
+		<result property="menuCheckStrictly"  column="JS_CDSXS"   />
+		<result property="deptCheckStrictly"  column="JS_BMSXS"   />
+		<result property="status"             column="JS_ZT"                />
+		<result property="delFlag"            column="JS_SC"              />
+		<result property="createBy"           column="JS_CJZ"             />
+		<result property="createTime"         column="JS_CJSJ"           />
+		<result property="updateBy"           column="JS_GXZ"             />
+		<result property="updateTime"         column="JS_GXSJ"           />
+		<result property="remark"             column="JS_BZ"                />
+	</resultMap>
+	
+	<sql id="selectRoleVo">
+	    select distinct r.JS_ID, r.JS_MC, r.JS_QX, r.JS_XSSX, r.JS_SJY, r.JS_CDSXS, r.JS_BMSXS,
+            r.JS_ZT, r.JS_SC, r.JS_CJSJ, r.JS_BZ 
+        from xt_js r
+	        left join xt_yh_js ur on ur.JS_ID = r.JS_ID
+	        left join xt_yh u on u.YH_ID = ur.YH_ID
+	        left join xt_bm d on u.YH_BM_ID = d.BM_ID
+    </sql>
+    
+    <select id="selectRoleList" parameterType="SysRole" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+		where r.JS_SC = '0'
+		<if test="roleName != null and roleName != ''">
+			AND r.JS_MC like concat('%', #{roleName}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND r.JS_ZT = #{status}
+		</if>
+		<if test="roleKey != null and roleKey != ''">
+			AND r.JS_QX like concat('%', #{roleKey}, '%')
+		</if>
+		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+			and date_format(r.JS_CJSJ,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+		</if>
+		<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+			and date_format(r.JS_CJSJ,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by r.JS_XSSX
+	</select>
+    
+	<select id="selectRolePermissionByUserId" parameterType="Long" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+		WHERE r.JS_SC = '0' and ur.YH_ID = #{userId}
+	</select>
+	
+	<select id="selectRoleAll" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+	</select>
+	
+	<select id="selectRoleListByUserId" parameterType="Long" resultType="Integer">
+		select r.JS_ID
+        from xt_js r
+	        left join xt_yh_js ur on ur.JS_ID = r.JS_ID
+	        left join xt_yh u on u.YH_ID = ur.YH_ID
+	    where u.YH_ID = #{userId}
+	</select>
+	
+	<select id="selectRoleById" parameterType="Long" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+		where r.JS_ID = #{roleId}
+	</select>
+	
+	<select id="selectRolesByUserName" parameterType="String" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+		WHERE r.JS_SC = '0' and u.YH_ZH = #{userName}
+	</select>
+	
+	<select id="checkRoleNameUnique" parameterType="String" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+		 where r.JS_MC=#{roleName} limit 1
+	</select>
+	
+	<select id="checkRoleKeyUnique" parameterType="String" resultMap="SysRoleResult">
+		<include refid="selectRoleVo"/>
+		 where r.JS_QX=#{roleKey} limit 1
+	</select>
+	
+ 	<insert id="insertRole" parameterType="SysRole" useGeneratedKeys="true" keyProperty="roleId">
+ 		insert into xt_js(
+ 			<if test="roleId != null and roleId != 0">JS_ID,</if>
+ 			<if test="roleName != null and roleName != ''">JS_MC,</if>
+ 			<if test="roleKey != null and roleKey != ''">JS_QX,</if>
+ 			<if test="roleSort != null and roleSort != ''">JS_XSSX,</if>
+ 			<if test="dataScope != null and dataScope != ''">JS_SJY,</if>
+ 			<if test="menuCheckStrictly != null">JS_CDSXS,</if>
+ 			<if test="deptCheckStrictly != null">JS_BMSXS,</if>
+ 			<if test="status != null and status != ''">JS_ZT,</if>
+ 			<if test="remark != null and remark != ''">JS_BZ,</if>
+ 			<if test="createBy != null and createBy != ''">JS_CJZ,</if>
+ 			JS_CJSJ
+ 		)values(
+ 			<if test="roleId != null and roleId != 0">#{roleId},</if>
+ 			<if test="roleName != null and roleName != ''">#{roleName},</if>
+ 			<if test="roleKey != null and roleKey != ''">#{roleKey},</if>
+ 			<if test="roleSort != null and roleSort != ''">#{roleSort},</if>
+ 			<if test="dataScope != null and dataScope != ''">#{dataScope},</if>
+ 			<if test="menuCheckStrictly != null">#{menuCheckStrictly},</if>
+ 			<if test="deptCheckStrictly != null">#{deptCheckStrictly},</if>
+ 			<if test="status != null and status != ''">#{status},</if>
+ 			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+ 		)
+	</insert>
+	
+	<update id="updateRole" parameterType="SysRole">
+ 		update xt_js
+ 		<set>
+ 			<if test="roleName != null and roleName != ''">JS_MC = #{roleName},</if>
+ 			<if test="roleKey != null and roleKey != ''">JS_QX = #{roleKey},</if>
+ 			<if test="roleSort != null and roleSort != ''">JS_XSSX = #{roleSort},</if>
+ 			<if test="dataScope != null and dataScope != ''">JS_SJY = #{dataScope},</if>
+ 			<if test="menuCheckStrictly != null">JS_CDSXS = #{menuCheckStrictly},</if>
+ 			<if test="deptCheckStrictly != null">JS_BMSXS = #{deptCheckStrictly},</if>
+ 			<if test="status != null and status != ''">JS_ZT = #{status},</if>
+ 			<if test="remark != null">JS_BZ = #{remark},</if>
+ 			<if test="updateBy != null and updateBy != ''">JS_GXZ = #{updateBy},</if>
+ 			JS_GXSJ = sysdate()
+ 		</set>
+ 		where JS_ID = #{roleId}
+	</update>
+	
+	<delete id="deleteRoleById" parameterType="Long">
+		update xt_js set JS_SC = '2' where JS_ID = #{roleId}
+ 	</delete>
+ 	
+ 	<delete id="deleteRoleByIds" parameterType="Long">
+ 	    update xt_js set JS_SC = '2' where JS_ID in
+ 		<foreach collection="array" item="roleId" open="(" separator="," close=")">
+ 			#{roleId}
+        </foreach> 
+ 	</delete>
+ 	
+</mapper> 

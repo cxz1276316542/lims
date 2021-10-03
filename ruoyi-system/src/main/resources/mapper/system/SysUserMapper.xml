@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysUserMapper">
+
+	<resultMap type="SysUser" id="SysUserResult">
+		<id     property="userId"       column="YH_ID"      />
+		<result property="detectionCenterID" column="JCZX_ID"/>
+		<result property="deptId"       column="YH_BM_ID"      />
+		<result property="userName"     column="YH_ZH"    />
+		<result property="nickName"     column="YH_NC"    />
+		<result property="email"        column="YH_YX"        />
+		<result property="phonenumber"  column="YH_DH"  />
+		<result property="sex"          column="YH_XB"          />
+		<result property="avatar"       column="YH_TXDZ"       />
+		<result property="password"     column="YH_MM"     />
+		<result property="status"       column="YH_ZT"       />
+		<result property="delFlag"      column="YH_SC"     />
+		<result property="loginIp"      column="YH_ZHDLIP"     />
+		<result property="loginDate"    column="YH_ZHDLSJ"   />
+		<result property="createBy"     column="YH_CJZ"    />
+		<result property="createTime"   column="YH_CJSJ"  />
+		<result property="updateBy"     column="YH_GXZ"    />
+		<result property="updateTime"   column="YH_GXSJ"  />
+		<result property="remark"       column="YH_BZ"       />
+		<result property="electronicSignature"       column="YH_DZQMDZ"       />
+		<association property="dept"    column="YH_BM_ID" javaType="SysDept" resultMap="deptResult" />
+		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
+	</resultMap>
+
+	<resultMap id="deptResult" type="SysDept">
+		<id     property="deptId"   column="BM_ID"     />
+		<result property="parentId" column="BM_FID"   />
+		<result property="deptName" column="BM_MC"   />
+		<result property="orderNum" column="BM_XSSX"   />
+		<result property="leader"   column="BM_FZR"      />
+		<result property="status"   column="BM_ZT" />
+	</resultMap>
+
+	<resultMap id="RoleResult" type="SysRole">
+		<id     property="roleId"       column="JS_ID"        />
+		<result property="roleName"     column="JS_MC"      />
+		<result property="roleKey"      column="JS_QX"       />
+		<result property="roleSort"     column="JS_XSSX"      />
+		<result property="dataScope"     column="JS_SJY"    />
+		<result property="status"       column="JS_ZT"    />
+	</resultMap>
+
+	<sql id="selectUserVo">
+
+        select u.YH_ID, u.JCZX_ID, u.YH_BM_ID, u.YH_ZH, u.YH_NC, u.YH_YX, u.YH_TXDZ, u.YH_DH, u.YH_MM, u.YH_XB, u.YH_ZT, u.YH_SC, u.YH_ZHDLIP, u.YH_ZHDLSJ, u.YH_CJZ, u.YH_CJSJ, u.YH_BZ, u.YH_DZQMDZ,
+        d.BM_ID, d.BM_FID, d.BM_MC, d.BM_XSSX, d.BM_FZR, d.BM_ZT as BM_ZT,
+        r.JS_ID, r.JS_MC, r.JS_QX, r.JS_XSSX, r.JS_SJY, r.JS_ZT as JS_ZT
+        from xt_yh u
+		    left join xt_bm d on u.YH_BM_ID = d.BM_ID
+		    left join xt_yh_js ur on u.YH_ID = ur.YH_ID
+		    left join xt_js r on r.JS_ID = ur.JS_ID
+    </sql>
+
+    <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
+		select u.YH_ID, u.JCZX_ID, u.YH_BM_ID, u.YH_NC, u.YH_ZH, u.YH_YX, u.YH_TXDZ, u.YH_DH, u.YH_MM, u.YH_XB, u.YH_ZT, u.YH_SC, u.YH_ZHDLIP, u.YH_ZHDLSJ, u.YH_CJZ, u.YH_CJSJ, u.YH_BZ, u.YH_DZQMDZ, d.BM_MC, d.BM_FZR from xt_yh u
+		left join xt_bm d on u.YH_BM_ID = d.BM_ID
+		where u.YH_SC = '0'
+		<if test="userName != null and userName != ''">
+			AND u.YH_ZH like concat('%', #{userName}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.YH_ZT = #{status}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.YH_DH like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+			AND date_format(u.YH_CJSJ,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+		</if>
+		<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+			AND date_format(u.YH_CJSJ,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.YH_BM_ID = #{deptId} OR u.YH_BM_ID IN ( SELECT t.BM_ID FROM xt_bm t WHERE find_in_set(#{deptId}, BM_ZBM) ))
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+	</select>
+
+	<select id="selectAllocatedList" parameterType="SysUser" resultMap="SysUserResult">
+	    select distinct u.YH_ID, u.YH_BM_ID, u.YH_ZH, u.YH_NC, u.YH_YX, u.YH_DH, u.YH_ZT, u.YH_CJSJ
+	    from xt_yh u
+			 left join xt_bm d on u.YH_BM_ID = d.BM_ID
+			 left join xt_yh_js ur on u.YH_ID = ur.YH_ID
+			 left join xt_js r on r.JS_ID = ur.JS_ID
+	    where u.YH_SC = '0' and r.JS_ID = #{roleId}
+	    <if test="userName != null and userName != ''">
+			AND u.YH_ZH like concat('%', #{userName}, '%')
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.YH_DH like concat('%', #{phonenumber}, '%')
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+	</select>
+
+	<select id="selectUnallocatedList" parameterType="SysUser" resultMap="SysUserResult">
+	    select distinct u.YH_ID, u.YH_BM_ID, u.YH_ZH, u.YH_NC, u.YH_YX, u.YH_DH, u.YH_ZT, u.YH_CJSJ
+	    from xt_yh u
+			 left join xt_bm d on u.YH_BM_ID = d.BM_ID
+			 left join xt_yh_js ur on u.YH_ID = ur.YH_ID
+			 left join xt_js r on r.JS_ID = ur.JS_ID
+	    where u.YH_SC = '0' and (r.JS_ID != #{roleId} or r.JS_ID IS NULL)
+	    and u.YH_ID not in (select u.YH_ID from xt_yh u inner join xt_yh_js ur on u.YH_ID = ur.YH_ID and ur.JS_ID = #{roleId})
+	    <if test="userName != null and userName != ''">
+			AND u.YH_ZH like concat('%', #{userName}, '%')
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.YH_DH like concat('%', #{phonenumber}, '%')
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+	</select>
+	
+	<select id="selectInspectorNameList" resultMap="SysUserResult">
+		select u.YH_ID, u.YH_NC
+		from xt_yh u
+			left join xt_yh_js ur on u.YH_ID = ur.YH_ID
+			left join xt_js r on r.JS_ID = ur.JS_ID
+		where r.JS_MC = "检测员"
+	</select>
+
+
+	<select id="selectUserByUserName" parameterType="String" resultMap="SysUserResult">
+	    <include refid="selectUserVo"/>
+		where u.YH_ZH = #{userName}
+	</select>
+
+	<select id="selectUserByNickName" parameterType="String" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.YH_NC = #{nickName}
+	</select>
+
+	<select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.YH_ID = #{userId}
+	</select>
+
+	<select id="selectUserByIds" parameterType="Long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.YH_ID in
+		<foreach collection="array" item="userId" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</select>
+
+	<select id="checkUserNameUnique" parameterType="String" resultType="int">
+		select count(1) from xt_yh where YH_ZH = #{userName} limit 1
+	</select>
+
+	<select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult">
+		select YH_ID, YH_DH from xt_yh where YH_DH = #{phonenumber} limit 1
+	</select>
+
+	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
+		select YH_ID, YH_YX from xt_yh where YH_YX = #{email} limit 1
+	</select>
+
+	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
+ 		insert into xt_yh(
+ 			<if test="userId != null and userId != 0">YH_ID,</if>
+ 			<if test="deptId != null and deptId != 0">YH_BM_ID,</if>
+ 			<if test="userName != null and userName != ''">YH_ZH,</if>
+ 			<if test="nickName != null and nickName != ''">YH_NC,</if>
+ 			<if test="email != null and email != ''">YH_YX,</if>
+ 			<if test="avatar != null and avatar != ''">YH_TXDZ,</if>
+ 			<if test="phonenumber != null and phonenumber != ''">YH_DH,</if>
+ 			<if test="sex != null and sex != ''">YH_XB,</if>
+ 			<if test="password != null and password != ''">YH_MM,</if>
+ 			<if test="status != null and status != ''">YH_ZT,</if>
+ 			<if test="createBy != null and createBy != ''">YH_CJZ,</if>
+ 			<if test="remark != null and remark != ''">YH_BZ,</if>
+ 			YH_CJSJ,
+ 			JCZX_ID
+ 		)values(
+ 			<if test="userId != null and userId != ''">#{userId},</if>
+ 			<if test="deptId != null and deptId != ''">#{deptId},</if>
+ 			<if test="userName != null and userName != ''">#{userName},</if>
+ 			<if test="nickName != null and nickName != ''">#{nickName},</if>
+ 			<if test="email != null and email != ''">#{email},</if>
+ 			<if test="avatar != null and avatar != ''">#{avatar},</if>
+ 			<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+ 			<if test="sex != null and sex != ''">#{sex},</if>
+ 			<if test="password != null and password != ''">#{password},</if>
+ 			<if test="status != null and status != ''">#{status},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			<if test="remark != null and remark != ''">#{remark},</if>
+ 			sysdate(),
+ 			1
+ 		)
+	</insert>
+
+	<insert id="insertCustom" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
+		insert into xt_yh(
+		<if test="userId != null and userId != 0">YH_ID,</if>
+		<if test="deptId != null and deptId != 0">YH_BM_ID,</if>
+		<if test="userName != null and userName != ''">YH_ZH,</if>
+		<if test="nickName != null and nickName != ''">YH_NC,</if>
+		<if test="email != null and email != ''">YH_YX,</if>
+		<if test="avatar != null and avatar != ''">YH_TXDZ,</if>
+		<if test="phonenumber != null and phonenumber != ''">YH_DH,</if>
+		<if test="sex != null and sex != ''">YH_XB,</if>
+		<if test="password != null and password != ''">YH_MM,</if>
+		<if test="status != null and status != ''">YH_ZT,</if>
+		<if test="createBy != null and createBy != ''">YH_CJZ,</if>
+		<if test="remark != null and remark != ''">YH_BZ,</if>
+		YH_CJSJ,
+		JCZX_ID,
+		YH_LX
+		)values(
+		<if test="userId != null and userId != ''">#{userId},</if>
+		<if test="deptId != null and deptId != ''">#{deptId},</if>
+		<if test="userName != null and userName != ''">#{userName},</if>
+		<if test="nickName != null and nickName != ''">#{nickName},</if>
+		<if test="email != null and email != ''">#{email},</if>
+		<if test="avatar != null and avatar != ''">#{avatar},</if>
+		<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+		<if test="sex != null and sex != ''">#{sex},</if>
+		<if test="password != null and password != ''">#{password},</if>
+		<if test="status != null and status != ''">#{status},</if>
+		<if test="createBy != null and createBy != ''">#{createBy},</if>
+		<if test="remark != null and remark != ''">#{remark},</if>
+		sysdate(),
+		1,
+		'01'
+		)
+	</insert>
+
+	<update id="updateUser" parameterType="SysUser">
+ 		update xt_yh
+ 		<set>
+ 			<if test="deptId != null and deptId != 0">YH_BM_ID = #{deptId},</if>
+ 			<if test="userName != null and userName != ''">YH_ZH = #{userName},</if>
+ 			<if test="nickName != null and nickName != ''">YH_NC = #{nickName},</if>
+ 			<if test="email != null ">YH_YX = #{email},</if>
+ 			<if test="phonenumber != null ">YH_DH = #{phonenumber},</if>
+ 			<if test="sex != null and sex != ''">YH_XB = #{sex},</if>
+ 			<if test="avatar != null and avatar != ''">YH_TXDZ = #{avatar},</if>
+ 			<if test="password != null and password != ''">YH_MM = #{password},</if>
+ 			<if test="status != null and status != ''">YH_ZT = #{status},</if>
+ 			<if test="loginIp != null and loginIp != ''">YH_ZHDLIP = #{loginIp},</if>
+ 			<if test="loginDate != null">YH_ZHDLSJ = #{loginDate},</if>
+ 			<if test="updateBy != null and updateBy != ''">YH_GXZ = #{updateBy},</if>
+ 			<if test="remark != null">YH_BZ = #{remark},</if>
+ 			<if test="electronicSignature != null">YH_DZQMDZ = #{electronicSignature},</if>
+ 			YH_GXSJ = sysdate()
+ 		</set>
+ 		where YH_ID = #{userId}
+	</update>
+
+	<update id="updateUserStatus" parameterType="SysUser">
+ 		update xt_yh set YH_ZT = #{status} where YH_ID = #{userId}
+	</update>
+
+	<update id="updateUserAvatar" parameterType="SysUser">
+ 		update xt_yh set YH_TXDZ = #{avatar} where YH_ZH = #{userName}
+	</update>
+
+	<update id="resetUserPwd" parameterType="SysUser">
+ 		update xt_yh set YH_MM = #{password} where YH_ZH = #{userName}
+	</update>
+
+	<delete id="deleteUserById" parameterType="Long">
+		update xt_yh set YH_SC = '2' where YH_ID = #{userId}
+ 	</delete>
+
+ 	<delete id="deleteUserByIds" parameterType="Long">
+ 		update xt_yh set YH_SC = '2' where YH_ID in
+ 		<foreach collection="array" item="userId" open="(" separator="," close=")">
+ 			#{userId}
+        </foreach>
+ 	</delete>
+
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysNoticeMapper">
+    
+    <resultMap type="SysNotice" id="SysNoticeResult">
+        <result property="noticeId"       column="TZ_ID"       />
+        <result property="noticeTitle"    column="TZ_BT"    />
+        <result property="noticeType"     column="TZ_LX"     />
+        <result property="noticeContent"  column="TZ_NR"  />
+        <result property="status"         column="TZ_ZT"          />
+        <result property="createBy"       column="TZ_CJZ"       />
+        <result property="createTime"     column="TZ_CJSJ"     />
+        <result property="updateBy"       column="TZ_GXZ"       />
+        <result property="updateTime"     column="TZ_GXSJ"     />
+        <result property="remark"         column="TZ_BZ"          />
+    </resultMap>
+    
+    <sql id="selectNoticeVo">
+        select TZ_ID, TZ_BT, TZ_LX, cast(TZ_NR as char) as TZ_NR, TZ_ZT, TZ_CJZ, TZ_CJSJ, TZ_GXZ, TZ_GXSJ, TZ_BZ 
+		from xt_yh_tz
+    </sql>
+    
+    <select id="selectNoticeById" parameterType="Long" resultMap="SysNoticeResult">
+        <include refid="selectNoticeVo"/>
+        where TZ_ID = #{noticeId}
+    </select>
+    
+    <select id="selectNoticeList" parameterType="SysNotice" resultMap="SysNoticeResult">
+        <include refid="selectNoticeVo"/>
+        <where>
+			<if test="noticeTitle != null and noticeTitle != ''">
+				AND TZ_BT like concat('%', #{noticeTitle}, '%')
+			</if>
+			<if test="noticeType != null and noticeType != ''">
+				AND TZ_LX = #{noticeType}
+			</if>
+			<if test="createBy != null and createBy != ''">
+				AND TZ_CJZ like concat('%', #{createBy}, '%')
+			</if>
+		</where>
+    </select>
+    
+    <insert id="insertNotice" parameterType="SysNotice">
+        insert into xt_yh_tz (
+			<if test="noticeTitle != null and noticeTitle != '' ">TZ_BT, </if>
+			<if test="noticeType != null and noticeType != '' ">TZ_LX, </if>
+			<if test="noticeContent != null and noticeContent != '' ">TZ_NR, </if>
+			<if test="status != null and status != '' ">TZ_ZT, </if>
+			<if test="remark != null and remark != ''">TZ_BZ,</if>
+ 			<if test="createBy != null and createBy != ''">TZ_CJZ,</if>
+ 			TZ_CJSJ
+ 		)values(
+			<if test="noticeTitle != null and noticeTitle != ''">#{noticeTitle}, </if>
+			<if test="noticeType != null and noticeType != ''">#{noticeType}, </if>
+			<if test="noticeContent != null and noticeContent != ''">#{noticeContent}, </if>
+			<if test="status != null and status != ''">#{status}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+	 
+    <update id="updateNotice" parameterType="SysNotice">
+        update xt_yh_tz 
+        <set>
+            <if test="noticeTitle != null and noticeTitle != ''">TZ_BT = #{noticeTitle}, </if>
+            <if test="noticeType != null and noticeType != ''">TZ_LX = #{noticeType}, </if>
+            <if test="noticeContent != null">TZ_NR = #{noticeContent}, </if>
+            <if test="status != null and status != ''">TZ_ZT = #{status}, </if>
+            <if test="updateBy != null and updateBy != ''">TZ_GXZ = #{updateBy},</if>
+ 			TZ_GXSJ = sysdate()
+        </set>
+        where TZ_ID = #{noticeId}
+    </update>
+	
+    <delete id="deleteNoticeById" parameterType="Long">
+        delete from xt_yh_tz where TZ_ID = #{noticeId}
+    </delete>
+    
+    <delete id="deleteNoticeByIds" parameterType="Long">
+        delete from xt_yh_tz where TZ_ID in 
+        <foreach item="noticeId" collection="array" open="(" separator="," close=")">
+            #{noticeId}
+        </foreach>
+    </delete>
+    
+</mapper>

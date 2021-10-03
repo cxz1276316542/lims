@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.DetectionStandardFoodPesticideMapper">
+
+    <resultMap type="DetectionStandardFoodPesticide" id="DetectionStandardFoodPesticideResult">
+        <result property="detectionStandardID"    column="JCBZ_ID"/>
+        <result property="foodTypeID"    column="YPLB_ID"/>
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="detectionFunctions"    column="JCFF_IDS"    />
+        <result property="maxResidualAmount"    column="ZDCLL"    />
+        <result property="remark"    column="BZ"    />
+        <result property="detectionCenterID" column="JCZX_ID"/>
+        <result property="isValid" column="SJYXX_BS"/>
+    </resultMap>
+
+    <!--根据检测标准-农药-食品-检测方法 ID查找 数据库中是否包含该数据-->
+    <select id="selectLimitInfoVoListByIDs" parameterType="DetectionStandardFoodPesticide"  resultMap="DetectionStandardFoodPesticideResult">
+        select JCBZ_ID, YPLB_ID, JCXM_ID, JCFF_IDS, ZDCLL, BZ from xlk_jcyp_jcxm_jcbz_jcff
+        <where>
+            <if test="detectionStandardID != null"> and JCBZ_ID = #{detectionStandardID}</if>
+            <if test="foodTypeID != null"> and YPLB_ID = #{foodTypeID}</if>
+            <if test="pesticideID != null"> and JCXM_ID = #{pesticideID}</if>
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <!--更新检测标准-农药-食品-检测方法表-->
+    <update id="updateLimitInfoVo" parameterType="DetectionStandardFoodPesticide">
+        update xlk_jcyp_jcxm_jcbz_jcff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="detectionStandardID != null"> JCBZ_ID = #{detectionStandardID},</if>
+            <if test="foodTypeID != null"> YPLB_ID = #{foodTypeID},</if>
+            <if test="pesticideID != null"> JCXM_ID = #{pesticideID},</if>
+            JCFF_IDS = #{detectionFunctions},
+            <if test="maxResidualAmount != null"> ZDCLL = #{maxResidualAmount},</if>
+            <if test="remark != null">BZ = #{remark},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid}</if>
+        </trim>
+        where JCBZ_ID = #{detectionStandardID} and YPLB_ID = #{foodTypeID} and JCXM_ID = #{pesticideID} and JCZX_ID = #{detectionCenterID}
+<!--            <if test="detectionFunctions != null and detectionFunctions != '' ">and JCFF_IDS = #{detectionFunctions}</if>-->
+<!--            <if test="detectionFunctions == null and detectionFunctions == ''">and JCFF_IDS is null</if>-->
+    </update>
+
+    <!--插入检测标准-农药-食品-检测方法表-->
+    <insert id="insertLimitInfoVo" parameterType="DetectionStandardFoodPesticide">
+        insert into xlk_jcyp_jcxm_jcbz_jcff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="detectionStandardID != null">JCBZ_ID,</if>
+            <if test="foodTypeID != null">YPLB_ID,</if>
+            <if test="pesticideID != null">JCXM_ID,</if>
+            <if test="detectionFunctions != null">JCFF_IDS,</if>
+            <if test="maxResidualAmount != null">ZDCLL,</if>
+            <if test="remark != null">BZ,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="detectionStandardID != null">#{detectionStandardID},</if>
+            <if test="foodTypeID != null">#{foodTypeID},</if>
+            <if test="pesticideID != null">#{pesticideID},</if>
+            <if test="detectionFunctions != null">#{detectionFunctions},</if>
+            <if test="maxResidualAmount != null">#{maxResidualAmount},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+        </trim>
+    </insert>
+    
+</mapper>

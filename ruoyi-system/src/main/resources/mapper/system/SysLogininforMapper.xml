@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysLogininforMapper">
+
+	<resultMap type="SysLogininfor" id="SysLogininforResult">
+		<id     property="infoId"        column="FW_ID"           />
+		<result property="userName"      column="YH_MC"         />
+		<result property="status"        column="ZT"            />
+		<result property="ipaddr"        column="IP_DZ"            />
+		<result property="loginLocation" column="DLWZ"    />
+		<result property="browser"       column="LLQ"           />
+		<result property="os"            column="os"                />
+		<result property="msg"           column="TSXX"               />
+		<result property="loginTime"     column="FW_SJ"        />
+	</resultMap>
+
+	<insert id="insertLogininfor" parameterType="SysLogininfor">
+		insert into xt_dlxx (YH_MC, ZT, IP_DZ, DLWZ, LLQ, os, TSXX, FW_SJ)
+		values (#{userName}, #{status}, #{ipaddr}, #{loginLocation}, #{browser}, #{os}, #{msg}, sysdate())
+	</insert>
+	
+	<select id="selectLogininforList" parameterType="SysLogininfor" resultMap="SysLogininforResult">
+		select FW_ID, YH_MC, IP_DZ, DLWZ, LLQ, os, ZT, TSXX, FW_SJ from xt_dlxx
+		<where>
+			<if test="ipaddr != null and ipaddr != ''">
+				AND IP_DZ like concat('%', #{ipaddr}, '%')
+			</if>
+			<if test="status != null and status != ''">
+				AND ZT = #{status}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND YH_MC like concat('%', #{userName}, '%')
+			</if>
+			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(FW_SJ,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+			</if>
+			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+				and date_format(FW_SJ,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+			</if>
+		</where>
+		order by FW_ID desc
+	</select>
+	
+	<delete id="deleteLogininforByIds" parameterType="Long">
+ 		delete from xt_dlxx where FW_ID in
+ 		<foreach collection="array" item="infoId" open="(" separator="," close=")">
+ 			#{infoId}
+        </foreach> 
+ 	</delete>
+    
+    <update id="cleanLogininfor">
+        truncate table xt_dlxx
+    </update>
+    
+</mapper> 

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.TaskAssignMapper">
+
+
+    <resultMap type="TaskAssign" id="TaskAssignResult">
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="taskAssignID"    column="RWFP_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="taskAssignNumber"    column="RWFP_BH"    />
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="detectionMethod"    column="JCFF_ID"    />
+        <result property="inspectorID"    column="RWFP_JCR_ID"    />
+        <result property="flag"    column="RWFP_BS"    />
+        <result property="reviewStatus"    column="RWFP_ZT"    />
+        <result property="operatorID"    column="RWFP_CZYID"    />
+        <result property="operationTime"    column="RWFP_CZSJ"    />
+        <result property="remark"    column="RWFP_BZ"    />
+    </resultMap>
+
+    <sql id="selectTaskAssignVo">
+        select YP_ID, RWFP_ID, YP_BH, RWFP_BH, JCXM_ID, JCFF_ID, RWFP_JCR_ID, RWFP_BS, RWFP_ZT, RWFP_CZYID, RWFP_CZSJ, RWFP_BZ from ypjc_jcxm_rwfp
+    </sql>
+
+    <select id="selectTaskAssignList" parameterType="TaskAssign" resultMap="TaskAssignResult">
+        <include refid="selectTaskAssignVo"/>
+        <where>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and YP_BH = #{sampleNumber}</if>
+            <if test="taskAssignNumber != null  and taskAssignNumber != ''"> and RWFP_BH = #{taskAssignNumber}</if>
+            <if test="pesticideID != null "> and JCXM_ID = #{pesticideID}</if>
+            <if test="detectionMethod != null "> and JCFF_ID = #{detectionMethod}</if>
+            <if test="inspectorID != null "> and RWFP_JCR_ID = #{inspectorID}</if>
+            <if test="flag != null "> and RWFP_BS = #{flag}</if>
+            <if test="reviewStatus != null "> and RWFP_ZT = #{reviewStatus}</if>
+            <if test="operatorID != null "> and RWFP_CZYID = #{operatorID}</if>
+            <if test="operationTime != null "> and RWFP_CZSJ = #{operationTime}</if>
+            <if test="remark != null  and remark != ''"> and RWFP_BZ = #{remark}</if>
+        </where>
+    </select>
+
+    <resultMap type="TaskAssginVO" id="TaskAssginVOResult">
+
+        <result property="inspectorID"    column="RWFP_JCR_ID"    />
+        <result property="taskAssignID"    column="RWFP_ID"    />
+        <result property="priority"    column="WTYP_YXJ"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="taskNumber"    column="RWFP_BH"    />
+        <result property="pesticideName"    column="JCXM_MC"    />
+        <result property="sampleAcademicName"    column="WTYP_XM"    />
+        <result property="inspectorName"    column="YH_NC"    />
+        <result property="inspectionRoom"    column="BM_MC"    />
+        <result property="standard"    column="JCBZ_MC"    />
+        <result property="inspectionMethodName"    column="JCFF_MC"    />
+        <result property="maxContent"    column="ZDCLL"    />
+        <result property="adi"    column="JCXM_ADI"    />
+        <result property="auditStatus"    column="RWFP_ZT"    />
+        <result property="operationTime"    column="RWFP_CZSJ"    />
+        <result property="remark"    column="RWFP_BZ"    />
+    </resultMap>
+
+
+    <sql id="TaskAssignVOList">
+SELECT
+    FP.RWFP_JCR_ID,
+    FP.RWFP_ID,
+    FP.YP_BH,
+    FP.RWFP_BH,
+    NY.JCXM_MC,
+    DJ.WTYP_XM,
+    YH.YH_NC,
+    DJ.WTYP_YXJ,
+    BM.BM_MC,
+    BZ.JCBZ_MC,
+    FF.JCFF_MC,
+    GXB.ZDCLL,
+    NY.JCXM_ADI,
+    FP.RWFP_ZT,
+    FP.RWFP_CZSJ,
+    FP.RWFP_BZ
+FROM
+    ypjc_jcxm_rwfp FP
+    LEFT JOIN ypjc_wtyp DJ ON FP.YP_ID = Dj.WTYP_ID
+    LEFT JOIN xt_yh YH ON FP.RWFP_JCR_ID = YH.YH_ID
+    LEFT JOIN xlk_jcxm NY ON FP.JCXM_ID = Ny.JCXM_ID
+    LEFT JOIN xlk_yp SP ON DJ.WTYP_XM = SP.YP_MC
+    LEFT JOIN xlk_jcbz BZ ON DJ.WTYP_JCBZ_ID = BZ.JCBZ_ID
+    LEFT JOIN xt_bm BM ON YH.YH_BM_ID = BM.BM_ID
+    LEFT JOIN xlk_jcyp_jcxm_jcbz_jcff GXB ON GXB.JCBZ_ID = BZ.JCBZ_ID
+    AND GXB.YPLB_ID = SP.YPLB_ID
+    AND FP.JCXM_ID = GXB.JCXM_ID
+    LEFT JOIN xlk_jcff FF ON FP.JCFF_ID = FF.JCFF_ID
+    </sql>
+
+    <select id="selectTaskAssignVOList" parameterType="TaskAssginVO" resultMap="TaskAssginVOResult">
+        <include refid="TaskAssignVOList"/>
+        <where>
+            <if test="inspectorID != null "> and RWFP_JCR_ID = #{inspectorID}</if>
+            <if test="taskAssignID != null "> and FP.RWFP_ID = #{taskAssignID}</if>
+            <if test="taskNumber != null "> and FP.RWFP_BH = #{taskNumber}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and FP.YP_BH = #{sampleNumber}</if>
+            <if test="pesticideName != null "> and NY.JCXM_MC = #{pesticideName}</if>
+            <if test="sampleAcademicName != null "> and DJ.WTYP_XM = #{sampleAcademicName}</if>
+            <if test="inspectorName != null "> and YH.YH_NC = #{inspectorName}</if>
+            <if test="inspectionRoom != null "> and BM.BM_MC = #{inspectionRoom}</if>
+            <if test="standard != null "> and BZ.JCBZ_MC = #{standard}</if>
+            <if test="inspectionMethodName != null "> and FF.JCFF_MC = #{inspectionMethodName}</if>
+            <if test="maxContent != null "> and GXB.ZDCLL = #{maxContent}</if>
+            <if test="adi != null "> and NY.JCXM_ADI = #{adi}</if>
+            <if test="operationTime != null "> and FP.RWFP_CZSJ = #{operationTime}</if>
+            <if test="remark != null  and remark != ''"> and FP.RWFP_BZ = #{remark}</if>
+            <if test="priority != null "> and DJ.WTYP_YXJ = #{priority}</if>
+            <if test="auditStatus != null "> and fp.RWFP_ZT = #{auditStatus}</if>
+            <if test="auditStatus == null "> and FP.RWFP_ZT = 3</if>
+            order by DJ.WTYP_YXJ  desc,RWFP_CZSJ desc
+        </where>
+    </select>
+
+
+    <select id="selectTaskAssignById" parameterType="Long" resultMap="TaskAssignResult">
+        <include refid="selectTaskAssignVo"/>
+        where RWFP_ID = #{taskAssignID}
+    </select>
+
+    <insert id="insertTaskAssign" parameterType="TaskAssign" useGeneratedKeys="true" keyProperty="taskAssignID">
+        insert into ypjc_jcxm_rwfp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="taskAssignID != null">RWFP_ID,</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH,</if>
+            <if test="taskAssignNumber != null and taskAssignNumber != ''">RWFP_BH,</if>
+            <if test="pesticideID != null">JCXM_ID,</if>
+            <if test="detectionMethod != null">JCFF_ID,</if>
+            <if test="inspectorID != null">RWFP_JCR_ID,</if>
+            <if test="flag != null">RWFP_BS,</if>
+            <if test="reviewStatus != null">RWFP_ZT,</if>
+            <if test="operatorID != null">RWFP_CZYID,</if>
+            <if test="operationTime != null">RWFP_CZSJ,</if>
+            <if test="remark != null">RWFP_BZ,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="taskAssignID != null">#{taskAssignID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">#{sampleNumber},</if>
+            <if test="taskAssignNumber != null and taskAssignNumber != ''">#{taskAssignNumber},</if>
+            <if test="pesticideID != null">#{pesticideID},</if>
+            <if test="detectionMethod != null">#{detectionMethod},</if>
+            <if test="inspectorID != null">#{inspectorID},</if>
+            <if test="flag != null">#{flag},</if>
+            <if test="reviewStatus != null">#{reviewStatus},</if>
+            <if test="operatorID != null">#{operatorID},</if>
+            <if test="operationTime != null">#{operationTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTaskAssign" parameterType="TaskAssign">
+        update ypjc_jcxm_rwfp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH = #{sampleNumber},</if>
+            <if test="taskAssignNumber != null and taskAssignNumber != ''">RWFP_BH = #{taskAssignNumber},</if>
+            <if test="pesticideID != null">JCXM_ID = #{pesticideID},</if>
+            <if test="detectionMethod != null">JCFF_ID = #{detectionMethod},</if>
+            <if test="flag != null">RWFP_BS = #{flag},</if>
+            <if test="inspectorID != null">RWFP_JCR_ID = #{inspectorID},</if>
+            <if test="reviewStatus != null">RWFP_ZT = #{reviewStatus},</if>
+            <if test="operatorID != null">RWFP_CZYID = #{operatorID},</if>
+            <if test="operationTime != null">RWFP_CZSJ = #{operationTime},</if>
+            <if test="remark != null">RWFP_BZ = #{remark},</if>
+        </trim>
+        where RWFP_ID = #{taskAssignID}
+    </update>
+
+    <delete id="deleteTaskAssignById" parameterType="Long">
+        delete from ypjc_jcxm_rwfp where YP_ID = #{sampleID}
+    </delete>
+
+    <delete id="deleteTaskAssignByIds" parameterType="String">
+        delete from ypjc_jcxm_rwfp where YP_ID in
+        <foreach item="sampleID" collection="array" open="(" separator="," close=")">
+            #{sampleID}
+        </foreach>
+    </delete>
+
+    <select id="unAssignedTaskList" resultType="com.ruoyi.detection.domain.vo.TaskAssignAddVO" parameterType="com.ruoyi.detection.domain.vo.TaskAssignAddSearchVO">
+        select
+            WTYP_ID sampleID,
+            YP_BH sampleNumber,
+            WTYP_XM sampleAcademicName,
+            WTYP_YXJ priority,
+            WTYP_YPZT sampleStatus,
+            b.JCBZ_MC detectionStandardName,
+            WTYP_CZSJ sampleRegisterTime
+       from ypjc_wtyp a left join xlk_jcbz b on a.WTYP_JCBZ_ID = b.JCBZ_ID
+           where WTYP_ZT = 21 and WTYP_YPFF = 0 and WTYP_BZ = 1
+           <if test="sampleID != null"> and WTYP_ID = #{sampleID}</if>
+           <if test="sampleNumber != null and sampleNumber != ''"> and YP_BH like concat(#{sampleNumber},'%')</if>
+           <if test="sampleAcademicName != null and sampleAcademicName != ''"> and WTYP_XM like concat(#{sampleNumber},'%')</if>
+           <if test="priority != null"> and WTYP_YXJ = #{priority}</if>
+           <if test="sampleStatus != null"> and WTYP_YPZT = #{sampleStatus}</if>
+           <if test="detectionStandardID != null"> and WTYP_JCBZ_ID = #{detectionStandardID}</if>
+           <if test="sampleRegisterStartTime != null and sampleRegisterEndTime != null"> and WTYP_CZSJ between #{sampleRegisterStartTime} and #{sampleRegisterEndTime}</if>
+    </select>
+
+    <select id="getUnsignedTaskByID" parameterType="long" resultType="com.ruoyi.detection.domain.vo.TaskAssignAddVO">
+        select
+            WTYP_ID sampleID,
+            YP_BH sampleNumber,
+            WTYP_XM sampleAcademicName,
+            WTYP_MS sampleDescription,
+            WTYP_YXJ priority,
+            WTYP_YPZT sampleStatus,
+            b.JCBZ_MC detectionStandardName,
+            b.JCBZ_ID detectionStandardID,
+            WTYP_CZSJ sampleRegisterTime
+       from ypjc_wtyp a left join xlk_jcbz b on a.WTYP_JCBZ_ID = b.JCBZ_ID
+           where WTYP_ZT = 21 and WTYP_YPFF = 0 and WTYP_BZ = 1 and WTYP_ID = #{sampleID}
+    </select>
+
+    <select id="getDetectionItemList" resultType="com.ruoyi.detection.domain.vo.DetectionItemVO">
+        select
+            a.JCXM_ID pesticideID,
+            a.JCFF_IDS detectionMethodIDs,
+            a.ZDCLL maxResidue
+        from
+            xlk_jcyp_jcxm_jcbz_jcff a
+        where
+            a.JCXM_ID in (select b.JCXM_ID from xlk_jcxm b where b.JCXM_HM = 0)
+            and
+            a.YPLB_ID in (select c.YPLB_ID from xlk_yp c where c.SP_XM = #{sampleAcademicName})
+            and a.JCBZ_ID = #{standardID}
+            and a.JCXM_ID in (select JCXM_ID from xlk_jczx_JCXM where JCZX_ID = 1)
+    </select>
+
+    <select id="findTaskAssignList" parameterType="com.ruoyi.detection.domain.vo.TaskAssignSearchVO" resultType="com.ruoyi.detection.domain.vo.TaskAssignSearchVO">
+        select
+               a.RWFP_ID taskAssignID,
+               a.RWFP_BH taskAssignNumber,
+               a.YP_ID sampleID,
+               a.YP_BH sampleNumber,
+               b.JCXM_MC pesticideName,
+               c.JCFF_MC detectionMethod,
+               d.YH_ZH inspectorName,
+               a.RWFP_BS flag,
+               a.RWFP_ZT status,
+               e.YH_ZH operatorName,
+               a.RWFP_CZSJ operationTime,
+               a.RWFP_BZ remark
+        from ypjc_jcxm_rwfp a
+            left join xlk_jcxm b on a.JCXM_ID = b.JCXM_ID
+            left join xlk_jcff c on a.JCFF_ID = c.JCFF_ID
+            left join xt_yh d on a.RWFP_JCR_ID = d.YH_ID
+            left join xt_yh e on a.RWFP_CZYID = e.YH_ID
+        where 1 = 1
+            <if test="sampleNumber != null and sampleNumber != ''"> and a.YP_BH like concat(#{sampleNumber},'%')</if>
+            <if test="taskAssignNumber != null and taskAssignNumber != ''"> and a.RWFP_BH like concat(#{taskAssignNumber},'%')</if>
+            <if test="pesticideID != null"> and a.JCXM_ID = #{pesticideID}</if>
+            <if test="detectionMethodID != null"> and a.JCFF_ID = #{detectionMethodID}</if>
+            <if test="inspectorID != null"> and a.RWFP_JCR_ID = #{inspectorID}</if>
+            <if test="flag != null"> and a.RWFP_BS = #{flag}</if>
+            <if test="status != null"> and a.RWFP_ZT = #{status}</if>
+            <if test="operatorID != null"> and a.RWFP_CZYID = #{operatorID}</if>
+            <if test="operationStartTime != null and operationStartTime != '' and operationEndTime != null and operationStartTime != ''"> and a.RWFP_CZSJ between #{operationStartTime} and #{operationEndTime}</if>
+    </select>
+
+    <update id="updateDetectionItem" parameterType="TaskAssign">
+        update ypjc_jcxm_rwfp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH = #{sampleNumber},</if>
+            <if test="taskAssignNumber != null and taskAssignNumber != ''">RWFP_BH = #{taskAssignNumber},</if>
+            <if test="pesticideID != null">JCXM_ID = #{pesticideID},</if>
+            <if test="detectionMethod != null">JCFF_ID = #{detectionMethod},</if>
+            <if test="flag != null">RWFP_BS = #{flag},</if>
+            <if test="inspectorID != null">RWFP_JCR_ID = #{inspectorID},</if>
+            <if test="reviewStatus != null">RWFP_ZT = #{reviewStatus},</if>
+            <if test="operatorID != null">RWFP_CZYID = #{operatorID},</if>
+            <if test="operationTime != null">RWFP_CZSJ = #{operationTime},</if>
+            RWFP_BZ = #{remark}
+        </trim>
+        where RWFP_ID = #{taskAssignID}
+    </update>
+
+
+    <select id="findTaskReassignList" parameterType="com.ruoyi.detection.domain.vo.TaskAssignSearchVO" resultType="com.ruoyi.detection.domain.vo.TaskAssignSearchVO">
+        select
+        a.RWFP_ID taskAssignID,
+        a.RWFP_BH taskAssignNumber,
+        a.YP_ID sampleID,
+        a.YP_BH sampleNumber,
+        b.JCXM_MC pesticideName,
+        c.JCFF_MC detectionMethod,
+        d.YH_ZH inspectorName,
+        a.RWFP_BS flag,
+        a.RWFP_ZT status,
+        e.YH_ZH operatorName,
+        a.RWFP_CZSJ operationTime,
+        a.RWFP_BZ remark
+        from ypjc_jcxm_rwfp a
+        left join xlk_jcxm b on a.JCXM_ID = b.JCXM_ID
+        left join xlk_jcff c on a.JCFF_ID = c.JCFF_ID
+        left join xt_yh d on a.RWFP_JCR_ID = d.YH_ID
+        left join xt_yh e on a.RWFP_CZYID = e.YH_ID
+        where 1 = 1 and (a.RWFP_ZT = 2 or a.RWFP_ZT = 4 or a.RWFP_ZT = 5)
+        <if test="sampleNumber != null and sampleNumber != ''"> and a.YP_BH like concat(#{sampleNumber},'%')</if>
+        <if test="taskAssignNumber != null and taskAssignNumber != ''"> and a.RWFP_BH like concat(#{taskAssignNumber},'%')</if>
+        <if test="pesticideID != null"> and a.JCXM_ID = #{pesticideID}</if>
+        <if test="detectionMethodID != null"> and a.JCFF_ID = #{detectionMethodID}</if>
+        <if test="inspectorID != null"> and a.RWFP_JCR_ID = #{inspectorID}</if>
+        <if test="flag != null"> and a.RWFP_BS = #{flag}</if>
+        <if test="status != null"> and a.RWFP_ZT = #{status}</if>
+        <if test="operatorID != null"> and a.RWFP_CZYID = #{operatorID}</if>
+        <if test="operationStartTime != null and operationStartTime != '' and operationEndTime != null and operationStartTime != ''"> and a.RWFP_CZSJ between #{operationStartTime} and #{operationEndTime}</if>
+    </select>
+</mapper>

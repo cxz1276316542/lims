@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.PesticideMapper">
+    
+    <resultMap type="Pesticide" id="PesticideResult">
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="pesticideName"    column="JCXM_MC"    />
+        <result property="pesticideEnglishName"    column="JCXM_YWMC"    />
+        <result property="pesticideExempt"    column="JCXM_HM"    />
+        <result property="Adi"    column="JCXM_ADI"    />
+        <result property="pesticideResidues"    column="JCXM_CLW"    />
+        <result property="pesticideFunction"    column="JCXM_GN"    />
+        <result property="detectionCenterID" column="JCZX_ID"/>
+        <result property="isValid" column="SJYXX_BS"/>
+    </resultMap>
+
+    <sql id="selectPesticideVo">
+        select JCXM_ID, JCXM_MC, JCXM_YWMC, JCXM_HM, JCXM_ADI, JCXM_CLW, JCXM_GN, JCZX_ID, SJYXX_BS from xlk_jcxm
+    </sql>
+
+
+    <select id="selectPesticideIDNameMap" resultMap="PesticideResult">
+        select JCXM_ID, JCXM_MC from xlk_jcxm
+        where JCZX_ID = #{detectionCenterID}
+    </select>
+
+    <select id="selectPesticideExist" resultMap="PesticideResult" parameterType="Pesticide">
+        <include refid="selectPesticideVo"></include>
+        <where>
+            <if test="pesticideName != null  and pesticideName != ''"> and JCXM_MC = #{pesticideName}</if>
+<!--            <if test="pesticideEnglishName != null  and pesticideEnglishName != ''"> and JCXM_YWMC = #{pesticideEnglishName}</if>-->
+<!--            <if test="pesticideExempt != null "> and JCXM_HM = #{pesticideExempt}</if>-->
+<!--            <if test="Adi != null "> and JCXM_ADI = #{Adi}</if>-->
+<!--            <if test="pesticideResidues != null  and pesticideResidues != ''"> and JCXM_CLW = #{pesticideResidues}</if>-->
+<!--            <if test="pesticideFunction != null  and pesticideFunction != ''"> and JCXM_GN = #{pesticideFunction}</if>-->
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+<!--            <if test="isValid != null">and SJYXX_BS = #{isValid}</if>-->
+        </where>
+    </select>
+
+    <select id="selectPesticideByName" resultMap="PesticideResult">
+        <include refid="selectPesticideVo"></include>
+        where JCXM_MC = #{pesticideName} and JCZX_ID = #{detectionCenterID}
+    </select>
+
+    <select id="selectExemptionList" parameterType="Pesticide" resultMap="PesticideResult">
+        select JCXM_MC, JCXM_YWMC from xlk_jcxm
+        <where>
+            JCXM_HM = 1 and JCZX_ID = #{detectionCenterID}
+        </where>
+    </select>
+
+    <select id="selectPesticideList" parameterType="Pesticide" resultMap="PesticideResult">
+        <include refid="selectPesticideVo"/>
+        <where>  
+            <if test="pesticideName != null  and pesticideName != ''"> and JCXM_MC like '%${pesticideName}%'</if>
+            <if test="pesticideEnglishName != null  and pesticideEnglishName != ''"> and JCXM_YWMC like '%${pesticideEnglishName}%'</if>
+            <if test="pesticideExempt != null "> and JCXM_HM = #{pesticideExempt}</if>
+            <if test="Adi != null "> and JCXM_ADI = #{Adi}</if>
+            <if test="pesticideResidues != null  and pesticideResidues != ''"> and JCXM_CLW like '%${pesticideResidues}%'</if>
+            <if test="pesticideFunction != null  and pesticideFunction != ''"> and JCXM_GN like '%${pesticideFunction}%'</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null ">and SJYXX_BS = #{isValid}</if>
+        </where>
+        order by JCXM_ADI desc , JCXM_MC asc
+    </select>
+    
+    <select id="selectPesticideById" resultMap="PesticideResult">
+        <include refid="selectPesticideVo"/>
+        where JCXM_ID = #{pesticideID} and JCZX_ID = #{detectionCenterID}
+    </select>
+        
+    <insert id="insertPesticide" parameterType="Pesticide" useGeneratedKeys="true" keyProperty="pesticideID">
+        insert into xlk_jcxm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pesticideName != null and pesticideName != ''">JCXM_MC,</if>
+            <if test="pesticideEnglishName != null and pesticideEnglishName != ''">JCXM_YWMC,</if>
+            <if test="pesticideExempt != null">JCXM_HM,</if>
+            <if test="Adi != null">JCXM_ADI,</if>
+            <if test="pesticideResidues != null">JCXM_CLW,</if>
+            <if test="pesticideFunction != null">JCXM_GN,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pesticideName != null and pesticideName != ''">#{pesticideName},</if>
+            <if test="pesticideEnglishName != null and pesticideEnglishName != ''">#{pesticideEnglishName},</if>
+            <if test="pesticideExempt != null">#{pesticideExempt},</if>
+            <if test="Adi != null">#{Adi},</if>
+            <if test="pesticideResidues != null">#{pesticideResidues},</if>
+            <if test="pesticideFunction != null">#{pesticideFunction},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePesticide" parameterType="Pesticide">
+        update xlk_jcxm
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pesticideName != null and pesticideName != ''">JCXM_MC = #{pesticideName},</if>
+            <if test="pesticideEnglishName != null and pesticideEnglishName != ''">JCXM_YWMC = #{pesticideEnglishName},</if>
+            <if test="pesticideExempt != null">JCXM_HM = #{pesticideExempt},</if>
+            <if test="Adi != null">JCXM_ADI = #{Adi},</if>
+            <if test="pesticideResidues != null">JCXM_CLW = #{pesticideResidues},</if>
+            <if test="pesticideFunction != null">JCXM_GN = #{pesticideFunction},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid}</if>
+        </trim>
+        where JCXM_ID = #{pesticideID} and JCZX_ID = #{detectionCenterID}
+    </update>
+
+    <delete id="deletePesticideById">
+        delete from xlk_jcxm where JCXM_ID = #{pesticideID} and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deletePesticideByIds">
+        delete from xlk_jcxm where JCXM_ID in 
+        <foreach item="pesticideID" collection="pesticideIDs" open="(" separator="," close=")">
+            #{pesticideID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+</mapper>

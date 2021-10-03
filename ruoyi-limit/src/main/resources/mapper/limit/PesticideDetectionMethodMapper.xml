@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.PesticideDetectionMethodMapper">
+    
+    <resultMap type="pesticideDetectionMethod" id="pesticideDetectionMethodResult">
+        <result property="pesticideDetectionMethodID"    column="JCXM_JCFF_ID"    />
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="pesticideName"    column="JCXM_MC"    />
+        <result property="detectionMethodID"    column="JCFF_ID"    />
+        <result property="detectionMethodName"    column="JCFF_MC"    />
+        <result property="detectionCenterID"    column="JCZX_ID"    />
+        <result property="isValid"    column="SJYXX_BS"    />
+    </resultMap>
+
+
+    <sql id="selectPesticideDetectionMethodVo">
+        select JCXM_JCFF_ID, xm.JCXM_ID, xm.JCXM_MC, ff.JCFF_ID, ff.JCFF_MC, xmff.JCZX_ID, xmff.SJYXX_BS
+        from xlk_jcxm_jcff as xmff
+        left join xlk_jcxm as xm on xmff.JCXM_ID = xm.JCXM_ID
+        left join xlk_jcff as ff on xmff.JCFF_ID = ff.JCFF_ID
+    </sql>
+
+    <select id="selectPesticideDetectionMethodList" parameterType="pesticideDetectionMethod" resultMap="pesticideDetectionMethodResult">
+        <include refid="selectPesticideDetectionMethodVo"/>
+        <where>  
+            <if test="pesticideID != null "> and xm.JCXM_ID = #{pesticideID}</if>
+            <if test="pesticideName != null and pesticideName != ''"> and JCXM_MC = #{pesticideName}</if>
+            <if test="detectionMethodID != null "> and ff.JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionMethodName != null and detectionMethodName != ''"> and JCFF_Name = #{detectionMethodName}</if>
+            <if test="detectionCenterID != null "> and xmff.JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null "> and xmff.SJYXX_BS = #{isValid}</if>
+        </where>
+    </select>
+    
+    <select id="selectPesticideDetectionMethodById" parameterType="Long" resultMap="pesticideDetectionMethodResult">
+        <include refid="selectPesticideDetectionMethodVo"/>
+        where JCXM_JCFF_ID = #{pesticideDetectionMethodID} and xmff.JCZX_ID = #{detectionCenterID}
+    </select>
+
+    <select id="selectPesticideDetectionMethodExist" resultMap="pesticideDetectionMethodResult" parameterType="pesticideDetectionMethod">
+        <include refid="selectPesticideDetectionMethodVo"></include>
+        <where>
+            <if test="pesticideID != null "> and xmff.JCXM_ID = #{pesticideID}</if>
+            <if test="detectionMethodID != null "> and xmff.JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionCenterID != null "> and xmff.JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+        
+    <insert id="insertPesticideDetectionMethod" parameterType="pesticideDetectionMethod" useGeneratedKeys="true" keyProperty="pesticideDetectionMethodID">
+        insert into xlk_jcxm_jcff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pesticideID != null">JCXM_ID,</if>
+            <if test="detectionMethodID != null">JCFF_ID,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pesticideID != null">#{pesticideID},</if>
+            <if test="detectionMethodID != null">#{detectionMethodID},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePesticideDetectionMethod" parameterType="pesticideDetectionMethod">
+        update xlk_jcxm_jcff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pesticideID != null">JCXM_ID = #{pesticideID},</if>
+            <if test="detectionMethodID != null">JCFF_ID = #{detectionMethodID},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid},</if>
+        </trim>
+        <where>
+            <if test="pesticideDetectionMethodID != null">JCXM_JCFF_ID = #{pesticideDetectionMethodID}</if>
+            <if test="pesticideID != null">and JCXM_ID = #{pesticideID}</if>
+            <if test="detectionMethodID != null ">and JCFF_ID = #{detectionMethodID} </if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </update>
+
+    <delete id="deletePesticideDetectionMethodByMethodIds">
+        delete from xlk_jcxm_jcff where JCFF_ID in
+        <foreach item="detectionMethodID" collection="detectionMethodIDs" open="(" separator="," close=")">
+            #{detectionMethodID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deletePesticideDetectionMethodByPesticideIds">
+        delete from xlk_jcxm_jcff where JCXM_ID in
+        <foreach item="pesticideID" collection="pesticideIDs" open="(" separator="," close=")">
+            #{pesticideID}
+        </foreach>
+         and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deletePesticideDetectionMethodById">
+        delete from xlk_jcxm_jcff where JCXM_JCFF_ID = #{pesticideDetectionMethodID} and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deletePesticideDetectionMethodByIds">
+        delete from xlk_jcxm_jcff where JCXM_JCFF_ID in 
+        <foreach item="pesticideDetectionMethodID" collection="pesticideDetectionMethodIDs" open="(" separator="," close=")">
+            #{pesticideDetectionMethodID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+</mapper>

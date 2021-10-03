@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.FoodTypeMapper">
+    
+    <resultMap type="FoodType" id="FoodTypeResult">
+        <result property="foodTypeID"    column="YPLB_ID"    />
+        <result property="foodTypeParentID"    column="YPLB_FID"    />
+        <result property="foodTypeName"    column="YPLB_MC"    />
+        <result property="detectionCenterID" column="JCZX_ID"/>
+        <result property="isValid" column="SJYXX_BS"/>
+    </resultMap>
+
+    <sql id="selectFoodTypeVo">
+        select YPLB_ID, YPLB_FID, YPLB_MC, JCZX_ID, SJYXX_BS from xlk_yplb
+    </sql>
+
+    <!-- YPLB_MC  Map   -->
+    <select id="selectFoodTypeNameMap" resultMap="FoodTypeResult">
+        select YPLB_ID, YPLB_FID, YPLB_MC from xlk_yplb
+    </select>
+
+    <select id="selectFoodTypeList" parameterType="FoodType" resultMap="FoodTypeResult">
+        <include refid="selectFoodTypeVo"/>
+        <where>
+            <if test="foodTypeID != null "> and YPLB_ID = #{foodTypeID}</if>
+            <if test="foodTypeParentID != null "> and YPLB_FID = #{foodTypeParentID}</if>
+            <if test="foodTypeName != null  and foodTypeName != ''">and YPLB_MC like '%${foodTypeName}%'</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null">and SJYXX_BS = #{isValid}</if>
+        </where>
+    </select>
+    
+    <select id="selectFoodTypeById" resultMap="FoodTypeResult">
+        <include refid="selectFoodTypeVo"/>
+        <where>
+            <if test="foodTypeID != null "> and YPLB_ID = #{foodTypeID}</if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+
+    </select>
+
+    <select id="selectFoodTypeExist" parameterType="FoodType" resultMap="FoodTypeResult">
+        <include refid="selectFoodTypeVo"/>
+        <where>
+            <if test="foodTypeParentID != null "> and YPLB_FID = #{foodTypeParentID}</if>
+            <if test="foodTypeName != null  and foodTypeName != ''"> and YPLB_MC = #{foodTypeName}</if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <select id="selectFoodTypeId" parameterType="FoodType" resultType="long">
+        select YPLB_ID from xlk_yplb
+        <where>
+            <if test="foodTypeParentID != null "> and YPLB_FID = #{foodTypeParentID}</if>
+            <if test="foodTypeID != null "> and YPLB_ID = #{foodTypeID}</if>
+            <if test="foodTypeName != null  and foodTypeName != ''"> and YPLB_MC = #{foodTypeName}</if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null">and SJYXX_BS = #{isValid}</if>
+        </where>
+    </select>
+
+<!--    public long[] selectFoodTypeIDS(Long foodTypeParentID);-->
+    <select id="selectFoodTypeIDS" resultType="java.lang.Long">
+        select YPLB_ID from xlk_yplb
+        <where>
+            <if test="foodTypeParentID != null "> and YPLB_FID = #{foodTypeParentID}</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <!--根据食品类别id找出它的子类-->
+    <select id="selectFoodTypeChildListById" resultMap="FoodTypeResult">
+        <include refid="selectFoodTypeVo"/>
+        <where>
+            <if test="foodTypeParentID != null "> YPLB_FID = #{foodTypeParentID}</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+        
+    <insert id="insertFoodType" parameterType="FoodType" useGeneratedKeys="true" keyProperty="foodTypeID">
+        insert into xlk_yplb
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="foodTypeParentID != null">YPLB_FID,</if>
+            <if test="foodTypeName != null and foodTypeName != ''">YPLB_MC,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="foodTypeParentID != null">#{foodTypeParentID},</if>
+            <if test="foodTypeName != null and foodTypeName != ''">#{foodTypeName},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFoodType" parameterType="FoodType">
+        update xlk_yplb
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="foodTypeParentID != null">YPLB_FID = #{foodTypeParentID},</if>
+            <if test="foodTypeName != null and foodTypeName != ''">YPLB_MC = #{foodTypeName},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid}</if>
+        </trim>
+        <where>
+            <if test="foodTypeParentID != null "> and YPLB_FID = #{foodTypeParentID}</if>
+            <if test="foodTypeID != null "> and YPLB_ID = #{foodTypeID}</if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </update>
+
+    <delete id="deleteFoodTypeById" parameterType="Long">
+        delete from xlk_yplb where JCZX_ID = #{detectionCenterID} and YPLB_ID = #{foodTypeID}
+    </delete>
+
+    <delete id="deleteFoodTypeByIds" parameterType="String">
+        delete from xlk_yplb where JCZX_ID = #{detectionCenterID} and YPLB_ID in
+        <foreach item="foodTypeID" collection="foodTypeIDs" open="(" separator="," close=")">
+            #{foodTypeID}
+        </foreach>
+    </delete>
+</mapper>

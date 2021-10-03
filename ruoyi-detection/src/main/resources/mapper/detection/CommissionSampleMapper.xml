@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.CommissionSampleMapper">
+
+    <resultMap type="CommissionSample" id="CommissionSampleResult">
+        <result property="sampleID"    column="WTYP_ID"    />
+        <result property="customerID"    column="KH_ID"    />
+        <result property="companyID"    column="DW_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="priority"    column="WTYP_YXJ"    />
+        <result property="samplingMode"    column="WTYP_CYFS"    />
+        <result property="detectionCategory"    column="WTYP_JCLB"    />
+        <result property="detectionStandardID"    column="WTYP_JCBZ_ID"    />
+        <result property="reportReceiveWay"    column="WTYP_BGLQFS"    />
+        <result property="receiptAddress"    column="WTYP_SHDZ"    />
+        <result property="sampleSenderPhone"    column="WTYP_SYRDH"    />
+        <result property="sampleSenderName"    column="WTYP_SYRMC"    />
+        <result property="samplingTime"    column="WTYP_CYSJ"    />
+        <result property="sampleName"    column="WTYP_MC"    />
+        <result property="sampleScientificName"    column="WTYP_XM"    />
+        <result property="sampleStatus"    column="WTYP_YPZT"    />
+        <result property="sampleQuantity"    column="WTYP_SL"    />
+        <result property="measureUnit"    column="WTYP_DW"    />
+        <result property="samplingBase"    column="WTYP_CYJS"    />
+        <result property="productionUnit"    column="WTYP_SCDW"    />
+        <result property="productionUnitAddress"    column="WTYP_SCDZ"    />
+        <result property="sampleDescription"    column="WTYP_MS"    />
+        <result property="recycle"    column="WTYP_HSYP"    />
+        <result property="sampleImage"    column="WTYP_TXDZ"    />
+        <result property="QRcodeAddress"    column="WTYP_EWMDZ"    />
+        <result property="electronicSignature"    column="WTYP_DZQMDZ"    />
+        <result property="reviewStatus"    column="WTYP_ZT"    />
+        <result property="sign"    column="WTYP_BZ"    />
+        <result property="operatorID"    column="WTYP_CZZID"    />
+        <result property="operationTime"    column="WTYP_CZSJ"    />
+        <result property="principalNumber"    column="WTYP_WTBH"    />
+    </resultMap>
+
+    <sql id="selectCommissionSampleVo">
+        select WTYP_ID, KH_ID, DW_ID, YP_BH, WTYP_YXJ, WTYP_CYFS, WTYP_JCLB, WTYP_JCBZ_ID, WTYP_BGLQFS,WTYP_SHDZ, WTYP_SYRDH, WTYP_SYRMC, WTYP_CYSJ, WTYP_MC, WTYP_XM, WTYP_YPZT, WTYP_SL, WTYP_DW, WTYP_CYJS, WTYP_SCDW, WTYP_SCDZ, WTYP_MS, WTYP_HSYP, WTYP_TXDZ, WTYP_EWMDZ, WTYP_DZQMDZ, WTYP_ZT, WTYP_BZ, WTYP_CZZID, WTYP_CZSJ, WTYP_WTBH from ypjc_wtyp
+    </sql>
+
+    <select id="selectCommissionSampleList" parameterType="CommissionSample" resultMap="CommissionSampleResult">
+        <include refid="selectCommissionSampleVo"/>
+        <where>
+            WTYP_YPJD = 1
+            <if test="principalNumber != null "> and WTYP_WTBH = #{principalNumber}</if>
+            <if test="customerID != null "> and KH_ID = #{customerID}</if>
+            <if test="companyID != null "> and DW_ID = #{companyID}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and YP_BH = #{sampleNumber}</if>
+            <if test="priority != null "> and WTYP_YXJ = #{priority}</if>
+            <if test="samplingMode != null "> and WTYP_CYFS = #{samplingMode}</if>
+            <if test="detectionCategory != null "> and WTYP_JCLB = #{detectionCategory}</if>
+            <if test="detectionStandardID != null "> and WTYP_JCBZ_ID = #{detectionStandardID}</if>
+            <if test="reportReceiveWay != null "> and WTYP_BGLQFS = #{reportReceiveWay}</if>
+            <if test="receiptAddress != null "> and WTYP_SHDZ = #{receiptAddress}</if>
+            <if test="sampleSenderPhone != null  and sampleSenderPhone != ''"> and WTYP_SYRDH = #{sampleSenderPhone}</if>
+            <if test="sampleSenderName != null  and sampleSenderName != ''"> and WTYP_SYRMC = #{sampleSenderName}</if>
+            <if test="samplingTime != null "> and WTYP_CYSJ = #{samplingTime}</if>
+            <if test="sampleName != null  and sampleName != ''"> and WTYP_MC = #{sampleName}</if>
+            <if test="sampleScientificName != null  and sampleScientificName != ''"> and WTYP_XM = #{sampleScientificName}</if>
+            <if test="sampleStatus != null "> and WTYP_YPZT = #{sampleStatus}</if>
+            <if test="sampleQuantity != null "> and WTYP_SL = #{sampleQuantity}</if>
+            <if test="measureUnit != null "> and WTYP_DW = #{measureUnit}</if>
+            <if test="samplingBase != null  and samplingBase != ''"> and WTYP_CYJS = #{samplingBase}</if>
+            <if test="productionUnit != null  and productionUnit != ''"> and WTYP_SCDW = #{productionUnit}</if>
+            <if test="productionUnitAddress != null  and productionUnitAddress != ''"> and WTYP_SCDZ = #{productionUnitAddress}</if>
+            <if test="sampleDescription != null  and sampleDescription != ''"> and WTYP_MS = #{sampleDescription}</if>
+            <if test="recycle != null "> and WTYP_HSYP = #{recycle}</if>
+            <if test="sampleImage != null  and sampleImage != ''"> and WTYP_TXDZ = #{sampleImage}</if>
+            <if test="QRcodeAddress != null  and QRcodeAddress != ''"> and WTYP_EWMDZ = #{QRcodeAddress}</if>
+            <if test="electronicSignature != null  and electronicSignature != ''"> and WTYP_DZQMDZ = #{electronicSignature}</if>
+            <if test="reviewStatus != null "> and WTYP_ZT = #{reviewStatus}</if>
+            <if test="sign != null "> and WTYP_BZ = #{sign}</if>
+            <if test="operatorID != null "> and WTYP_CZZID = #{operatorID}</if>
+            <if test="operationTime != null "> and WTYP_CZSJ = #{operationTime}</if>
+        </where>
+    </select>
+
+    <select id="selectCommissionSampleById" parameterType="Long" resultMap="CommissionSampleResult">
+        <include refid="selectCommissionSampleVo"/>
+        where WTYP_ID = #{sampleID}
+    </select>
+
+    <insert id="insertCommissionSample" parameterType="CommissionSample" useGeneratedKeys="true" keyProperty="sampleID">
+        insert into ypjc_wtyp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerID != null">KH_ID,</if>
+            <if test="companyID != null">DW_ID,</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH,</if>
+            <if test="principalNumber != null and principalNumber != ''">WTYP_WTBH,</if>
+            <if test="priority != null">WTYP_YXJ,</if>
+            <if test="samplingMode != null">WTYP_CYFS,</if>
+            <if test="detectionCategory != null">WTYP_JCLB,</if>
+            <if test="detectionStandardID != null">WTYP_JCBZ_ID,</if>
+            <if test="reportReceiveWay != null">WTYP_BGLQFS,</if>
+            <if test="receiptAddress != null "> WTYP_SHDZ,</if>
+            <if test="sampleSenderPhone != null">WTYP_SYRDH,</if>
+            <if test="sampleSenderName != null">WTYP_SYRMC,</if>
+            <if test="samplingTime != null">WTYP_CYSJ,</if>
+            <if test="sampleName != null and sampleName != ''">WTYP_MC,</if>
+            <if test="sampleScientificName != null and sampleScientificName != ''">WTYP_XM,</if>
+            <if test="sampleStatus != null">WTYP_YPZT,</if>
+            <if test="sampleQuantity != null">WTYP_SL,</if>
+            <if test="measureUnit != null">WTYP_DW,</if>
+            <if test="samplingBase != null">WTYP_CYJS,</if>
+            <if test="productionUnit != null">WTYP_SCDW,</if>
+            <if test="productionUnitAddress != null">WTYP_SCDZ,</if>
+            <if test="sampleDescription != null">WTYP_MS,</if>
+            <if test="recycle != null">WTYP_HSYP,</if>
+            <if test="sampleImage != null">WTYP_TXDZ,</if>
+            <if test="QRcodeAddress != null">WTYP_EWMDZ,</if>
+            <if test="electronicSignature != null">WTYP_DZQMDZ,</if>
+            <if test="reviewStatus != null">WTYP_ZT,</if>
+            <if test="sign != null">WTYP_BZ,</if>
+            <if test="operatorID != null">WTYP_CZZID,</if>
+            <if test="operationTime != null">WTYP_CZSJ,</if>
+            <if test="sampleStage != null">WTYP_YPJD,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerID != null">#{customerID},</if>
+            <if test="companyID != null">#{companyID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">#{sampleNumber},</if>
+            <if test="principalNumber != null and principalNumber != ''">#{principalNumber},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="samplingMode != null">#{samplingMode},</if>
+            <if test="detectionCategory != null">#{detectionCategory},</if>
+            <if test="detectionStandardID != null">#{detectionStandardID},</if>
+            <if test="reportReceiveWay != null">#{reportReceiveWay},</if>
+            <if test="receiptAddress != null">#{receiptAddress},</if>
+            <if test="sampleSenderPhone != null">#{sampleSenderPhone},</if>
+            <if test="sampleSenderName != null">#{sampleSenderName},</if>
+            <if test="samplingTime != null">#{samplingTime},</if>
+            <if test="sampleName != null and sampleName != ''">#{sampleName},</if>
+            <if test="sampleScientificName != null and sampleScientificName != ''">#{sampleScientificName},</if>
+            <if test="sampleStatus != null">#{sampleStatus},</if>
+            <if test="sampleQuantity != null">#{sampleQuantity},</if>
+            <if test="measureUnit != null">#{measureUnit},</if>
+            <if test="samplingBase != null">#{samplingBase},</if>
+            <if test="productionUnit != null">#{productionUnit},</if>
+            <if test="productionUnitAddress != null">#{productionUnitAddress},</if>
+            <if test="sampleDescription != null">#{sampleDescription},</if>
+            <if test="recycle != null">#{recycle},</if>
+            <if test="sampleImage != null">#{sampleImage},</if>
+            <if test="QRcodeAddress != null">#{QRcodeAddress},</if>
+            <if test="electronicSignature != null">#{electronicSignature},</if>
+            <if test="reviewStatus != null">#{reviewStatus},</if>
+            <if test="sign != null">#{sign},</if>
+            <if test="operatorID != null">#{operatorID},</if>
+            <if test="operationTime != null">#{operationTime},</if>
+            <if test="sampleStage != null">#{sampleStage}</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommissionSample" parameterType="CommissionSample">
+        update ypjc_wtyp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerID != null">KH_ID = #{customerID},</if>
+            <if test="companyID != null">DW_ID = #{companyID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH = #{sampleNumber},</if>
+            <if test="priority != null">WTYP_YXJ = #{priority},</if>
+            <if test="samplingMode != null">WTYP_CYFS = #{samplingMode},</if>
+            <if test="detectionCategory != null">WTYP_JCLB = #{detectionCategory},</if>
+            <if test="detectionStandardID != null">WTYP_JCBZ_ID = #{detectionStandardID},</if>
+            <if test="reportReceiveWay != null">WTYP_BGLQFS = #{reportReceiveWay},</if>
+            <if test="receiptAddress != null">WTYP_SHDZ = #{receiptAddress},</if>
+            <if test="sampleSenderPhone != null">WTYP_SYRDH = #{sampleSenderPhone},</if>
+            <if test="sampleSenderName != null">WTYP_SYRMC = #{sampleSenderName},</if>
+            <if test="samplingTime != null">WTYP_CYSJ = #{samplingTime},</if>
+            <if test="sampleName != null and sampleName != ''">WTYP_MC = #{sampleName},</if>
+            <if test="sampleScientificName != null and sampleScientificName != ''">WTYP_XM = #{sampleScientificName},</if>
+            <if test="sampleStatus != null">WTYP_YPZT = #{sampleStatus},</if>
+            <if test="sampleQuantity != null">WTYP_SL = #{sampleQuantity},</if>
+            <if test="measureUnit != null">WTYP_DW = #{measureUnit},</if>
+            <if test="samplingBase != null">WTYP_CYJS = #{samplingBase},</if>
+            <if test="productionUnit != null">WTYP_SCDW = #{productionUnit},</if>
+            <if test="productionUnitAddress != null">WTYP_SCDZ = #{productionUnitAddress},</if>
+            <if test="sampleDescription != null">WTYP_MS = #{sampleDescription},</if>
+            <if test="recycle != null">WTYP_HSYP = #{recycle},</if>
+            <if test="sampleImage != null">WTYP_TXDZ = #{sampleImage},</if>
+            <if test="QRcodeAddress != null">WTYP_EWMDZ = #{QRcodeAddress},</if>
+            <if test="electronicSignature != null">WTYP_DZQMDZ = #{electronicSignature},</if>
+            <if test="reviewStatus != null">WTYP_ZT = #{reviewStatus},</if>
+            <if test="sign != null">WTYP_BZ = #{sign},</if>
+            <if test="operatorID != null">WTYP_CZZID = #{operatorID},</if>
+            <if test="operationTime != null">WTYP_CZSJ = #{operationTime},</if>
+        </trim>
+        where WTYP_ID = #{sampleID}
+    </update>
+
+    <delete id="deleteCommissionSampleById" parameterType="Long">
+        delete from ypjc_wtyp where WTYP_ID = #{sampleID}
+    </delete>
+
+    <delete id="deleteCommissionSampleByIds" parameterType="String">
+        update ypjc_wtyp set WTYP_BZ = 0 where WTYP_ID in
+        <foreach item="sampleID" collection="array" open="(" separator="," close=")">
+            #{sampleID}
+        </foreach>
+    </delete>
+
+    <update id="updateStatusById" parameterType="java.util.Map">
+        update ypjc_wtyp
+        <set>
+            WTYP_ZT = #{status}
+            where WTYP_ID in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")" >
+                #{item}
+            </foreach>
+        </set>
+    </update>
+
+
+    <update id="submitSampleBatch">
+        update ypjc_wtyp set WTYP_ZT = 12, WTYP_CZZID = #{operatorID} where WTYP_ID in
+        <foreach item="sampleID" collection="ids" open="(" separator="," close=")">
+            #{sampleID}
+        </foreach>
+    </update>
+
+
+    <update id="updateCommissionAssignStatusById">
+        update ypjc_wtyp set WTYP_YPFF = #{assignStatus}  where WTYP_ID in
+        <foreach item="sampleID" collection="sampleIDs" open="(" separator="," close=")">
+            #{sampleID}
+        </foreach>
+    </update>
+<!---->
+<!--    <select id="selectAssignedList" resultMap="CommissionSampleResult">-->
+<!--        <include refid="selectCommissionSampleVo"/>-->
+<!--        where WTYP_ZT = 6-->
+<!--    </select>-->
+
+<!--    <select id="selectAllAssignList" resultMap="CommissionSampleResult">-->
+<!--        <include refid="selectCommissionSampleVo"/>-->
+<!--        where WTYP_ZT in (5,6)-->
+<!--    </select>-->
+
+<!--    <select id="countNotAssignList" resultType="java.lang.Integer">-->
+<!--        select count(*) from ypjc_wtyp where WTYP_ZT = 5 and WTYP_YPFF = 0-->
+<!--    </select>-->
+
+<!--    <select id="countAssignedList" resultType="java.lang.Integer">-->
+<!--        select count(*) from ypjc_wtyp where WTYP_ZT = 6-->
+<!--    </select>-->
+
+<!--    <select id="countAllAssignList" resultType="java.lang.Integer">-->
+<!--        select count(*) from ypjc_wtyp where WTYP_ZT in (5,6)-->
+<!--    </select>-->
+
+    <select id="searchAllCommissionSampleRegister" parameterType="com.ruoyi.detection.domain.vo.QueryCommissionSampleVO" resultType="com.ruoyi.detection.domain.vo.CommissionSampleRegisterVO">
+        select a.WTYP_ID sampleID,a.KH_ID customerID,b.YH_ZH customerNumber,a.YP_BH sampleNumber,
+               a.WTYP_YXJ priority, a.WTYP_CYFS samplingMode,
+               a.WTYP_JCLB detectionCategory,c.JCBZ_MC detectionStandardName,
+               a.WTYP_BGLQFS reportReceiveWay, a.WTYP_SHDZ receiptAddress,
+               a.WTYP_SYRDH sampleSenderPhone, a.WTYP_SYRMC sampleSenderName,
+               a.WTYP_CYSJ samplingTime, a.WTYP_MC sampleName, a.WTYP_XM sampleScientificName,
+               a.WTYP_YPZT sampleStatus, a.WTYP_SL sampleQuantity, d.JLDW_MC measureUnit,
+               a.WTYP_CYJS samplingBase, a.WTYP_SCDW productionUnit,
+               a.WTYP_SCDZ productionUnitAddress,a.WTYP_MS sampleDescription,
+               a.WTYP_HSYP recycle, a.WTYP_TXDZ sampleImage, a.WTYP_EWMDZ QRcodeAddress,
+               e.YH_ZH operator, a.WTYP_CZSJ operationTime,a.WTYP_ZT status
+        from ypjc_wtyp a left join xt_yh b on a.KH_ID = b.YH_ID
+            left join xlk_jcbz c on a.WTYP_JCBZ_ID = c.JCBZ_ID
+            left join xlk_jldw d on a.WTYP_DW = d.JLDW_ID
+            left join xt_yh e on a.WTYP_CZZID = e.YH_ID
+        where a.WTYP_BZ = 1
+        <if test="customerNumber != null and customerNumber != ''"> and b.YH_ZH like concat(#{customerNumber},'%')</if>
+        <if test="sampleNumber != null and sampleNumber != ''"> and a.YP_BH = #{sampleNumber}</if>
+        <if test="priority != null"> and a.WTYP_YXJ = #{priority}</if>
+        <if test="sampleMethod != null"> and a.WTYP_CYFS = #{sampleMethod}</if>
+        <if test="detectionType != null"> and a.WTYP_JCLB = #{detectionType}</if>
+        <if test="detectionStandardID != null"> and a.WTYP_JCBZ_ID = #{detectionStandardID}</if>
+        <if test="sendSamplePersonPhone != null and sendSamplePersonPhone != ''"> and a.WTYP_SYRDH = #{sendSamplePersonPhone}</if>
+        <if test="sendSamplePersonName != null and sendSamplePersonName != ''"> and a.WTYP_SYRMC = #{sendSamplePersonName}</if>
+        <if test="samplingStartTime != null and samplingStartTime != '' and samplingEndTime != null and samplingEndTime != ''"> and WTYP_CYSJ between #{samplingStartTime} and #{samplingEndTime}</if>
+        <if test="sampleName != null and sampleName != ''"> and a.WTYP_MC = #{sampleName}</if>
+        <if test="sampleAcademicName != null and sampleAcademicName != ''"> and a.WTYP_XM = #{sampleAcademicName}</if>
+        <if test="productionUnit != null and productionUnit != ''"> and a.WTYP_SCDW = #{productionUnit} </if>
+        <if test="searchSource != null and searchSource == 1"> and (a.WTYP_ZT = 1 or a.WTYP_ZT = 2)</if>
+        <if test="searchSource != null and searchSource == 2"> and a.WTYP_ZT = 11</if>
+        <if test="searchSource != null and searchSource == 3"> and a.WTYP_ZT = 10 </if>
+        <if test="searchSource != null and searchSource == 4"> and (a.WTYP_ZT = 12 or a.WTYP_ZT = 20 or a.WTYP_ZT = 21) </if>
+        <if test="operatorID != null">and WTYP_CZZID = #{operatorID}</if>
+        order by a.WTYP_YXJ desc, a.WTYP_CZSJ asc
+    </select>
+
+    <select id="selectCommissionSampleByIds" resultMap="CommissionSampleResult">
+        select * from ypjc_wtyp where WTYP_ID in
+        <foreach collection="array" item="sampleID" open="(" separator="," close=")">
+            #{sampleID}
+        </foreach>
+    </select>
+
+    <select id="selectCommissionSampleBySampleNumber" parameterType="CommissionSample" resultMap="CommissionSampleResult">
+        <include refid="selectCommissionSampleVo"/>
+        <where>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and YP_BH = #{sampleNumber}</if>
+        </where>
+    </select>
+
+    <select id="searchLastRecordByCustomerID" parameterType="Long" resultMap="CommissionSampleResult">
+        <include refid="selectCommissionSampleVo"/>
+        where KH_ID = #{customerID} order by WTYP_ID desc limit 1
+    </select>
+
+    <select id="findItemListByIDs" resultType="string">
+        select JCXM_MC from xlk_jcxm where JCXM_ID in
+        <foreach collection="array" item="id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findItemListByNames" parameterType="arraylist" resultType="long">
+        select JCXM_ID from xlk_jcxm where JCXM_MC in
+        <foreach collection="list" item="id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

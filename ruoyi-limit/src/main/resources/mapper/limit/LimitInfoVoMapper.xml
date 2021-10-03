@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.LimitInfoVoMapper">
+    
+    <resultMap type="LimitInfoVo" id="LimitInfoVoResult">
+
+        <result property="standard"    column="JCBZ_ID"    />
+        <result property="standardNumber"    column="JCBZ_BH"    />
+        <result property="standardType"    column="JCBZ_LX"    />
+        <result property="standardName"    column="JCBZ_MC"    />
+        <result property="standardRemark"    column="JCBZ_BZ"    />
+        <result property="standardStartTime"    column="JCBZ_KSSJ"    />
+        <result property="standardEndTime"    column="JCBZ_JSSJ"    />
+
+        <result property="foodID"    column="YP_ID"    />
+        <result property="foodTypeID"    column="YPLB_ID"    />
+        <result property="foodNickName"    column="YP_MC"    />
+        <result property="foodName"    column="YP_XM"    />
+        <result property="detectionPart"    column="YP_CDBW"    />
+
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="pesticideName"    column="JCXM_MC"    />
+        <result property="pesticideEnglishName"    column="JCXM_YWMC"    />
+        <result property="pesticideExempt"    column="JCXM_HM"    />
+        <result property="Adi"    column="JCXM_ADI"    />
+        <result property="pesticideResidues"    column="JCXM_CLW"    />
+        <result property="pesticideFunction"    column="JCXM_GN"    />
+
+        <result property="detectionMethodName"    column="JCFF_MC"    />
+        <result property="detectionMethodInfo"    column="JCFF_CZMS"    />
+        <result property="detectionMethodURL"    column="JCFF_DZ"    />
+
+        <result property="maxResidualAmount"    column="ZDCLL"    />
+        <result property="remark"    column="BZ"    />
+        <result property="detectionFunctionIDs"    column="JCFF_IDS"    />
+
+    </resultMap>
+
+    <sql id="selectLimitInfoVo">
+        select bz.JCBZ_ID,bz.JCBZ_BH,bz.JCBZ_LX,bz.JCBZ_MC,bz.JCBZ_BZ,bz.JCBZ_KSSJ,bz.JCBZ_JSSJ,
+			   yp.YP_ID,yp.YP_MC,yp.YP_XM,yp.YP_CDBW,yp.YPLB_ID,
+               xm.JCXM_ID,xm.JCXM_MC,xm.JCXM_YWMC,xm.JCXM_HM,xm.JCXM_ADI,xm.JCXM_CLW,xm.JCXM_GN,
+               bsn.ZDCLL,bsn.BZ,bsn.JCFF_IDS from
+               xlk_jcyp_jcxm_jcbz_jcff as bsn
+               left join xlk_jcbz as bz on bsn.JCBZ_ID = bz.JCBZ_ID
+               left join xlk_yp as yp on bsn.YPLB_ID = yp.YPLB_ID
+               left join xlk_jcxm as xm on bsn.JCXM_ID = xm.JCXM_ID
+    </sql>
+
+    <select id="selectLimitInfoVoList" parameterType="LimitInfoVo"  resultMap="LimitInfoVoResult">
+        <include refid="selectLimitInfoVo"/>
+        <where>
+            <if test="standard != null ">and bz.JCBZ_ID = #{standard}</if>
+            <if test="standardNumber != null  and standardNumber != ''"> and JCBZ_BH = #{standardNumber}</if>
+            <if test="standardType != null "> and JCBZ_LX = #{standardType}</if>
+            <if test="standardName != null  and standardName != ''"> and JCBZ_MC = #{standardName}</if>
+            <if test="standardRemark != null  and standardRemark != ''"> and JCBZ_BZ = #{standardRemark}</if>
+            <if test="standardStartTime != null "> and JCBZ_KSSJ = #{standardStartTime}</if>
+            <if test="standardEndTime != null "> and JCBZ_JSSJ = #{standardEndTime}</if>
+
+            <if test="foodID != null "> and yp.YP_ID = #{foodID}</if>
+            <if test="foodTypeID != null "> and yp.YPLB_ID = #{foodTypeID}</if>
+            <if test="foodNickName != null  and foodNickName != ''"> and YP_MC like concat('%',#{foodNickName},'%') </if>
+            <if test="foodName != null and foodName != ''"> and YP_XM like concat('%',#{foodName},'%')</if>
+            <if test="detectionPart != null  and detectionPart != ''"> and YP_CDBW like concat('%',#{detectionPart},'%')</if>
+
+            <if test="pesticideID != null "> and xm.JCXM_ID = #{pesticideID}</if>
+            <if test="pesticideName != null  and pesticideName != ''"> and JCXM_MC like concat('%',#{pesticideName},'%') </if>
+            <if test="pesticideEnglishName != null  and pesticideEnglishName != ''"> and JCXM_YWMC like concat('%',#{pesticideEnglishName},'%') </if>
+            <if test="pesticideExempt != null "> and JCXM_HM = #{pesticideExempt}</if>
+            <if test="Adi != null "> and JCXM_ADI = #{Adi}</if>
+            <if test="pesticideResidues != null  and pesticideResidues != ''"> and JCXM_CLW like concat('%',#{pesticideResidues},'%') </if>
+            <if test="pesticideFunction != null  and pesticideFunction != ''"> and JCXM_GN like concat('%',#{pesticideFunction},'%')</if>
+
+        </where>
+
+
+    </select>
+
+    <!--根据食品信息 多表查找限量库明细-->
+    <select id="selectLimitInfoVoListByFood" parameterType="Food" resultMap="LimitInfoVoResult">
+        <include refid="selectLimitInfoVo"/>
+        <where>
+            <if test="foodID != null "> and YP_ID = #{foodID}</if>
+            <if test="foodTypeID != null "> and yp.YPLB_ID = #{foodTypeID}</if>
+            <if test="foodNickName != null  and foodNickName != ''"> and YP_MC like concat('%',#{foodNickName},'%') </if>
+            <if test="foodName != null and foodName != ''"> and YP_XM like concat('%',#{foodName},'%')</if>
+            <if test="detectionPart != null  and detectionPart != ''"> and YP_CDBW like concat('%',#{detectionPart},'%')</if>
+        </where>
+    </select>
+
+    <!--根据检测农药信息 多表查找限量库明细-->
+    <select id="selectLimitInfoVoListByPesticide" parameterType="Pesticide" resultMap="LimitInfoVoResult">
+        <include refid="selectLimitInfoVo"/>
+        <where>
+            <if test="pesticideID != null "> and xm.JCXM_ID = #{pesticideID}</if>
+            <if test="pesticideName != null  and pesticideName != ''"> and JCXM_MC like concat('%',#{pesticideName},'%') </if>
+            <if test="pesticideEnglishName != null  and pesticideEnglishName != ''"> and JCXM_YWMC like concat('%',#{pesticideEnglishName},'%') </if>
+            <if test="pesticideExempt != null "> and JCXM_HM = #{pesticideExempt}</if>
+            <if test="Adi != null "> and JCXM_ADI = #{Adi}</if>
+            <if test="pesticideResidues != null  and pesticideResidues != ''"> and JCXM_CLW like concat('%',#{pesticideResidues},'%') </if>
+            <if test="pesticideFunction != null  and pesticideFunction != ''"> and JCXM_GN like concat('%',#{pesticideFunction},'%')</if>
+        </where>
+    </select>
+
+    <!--根据检测标准编号查询限量库详细信息集合-->
+    <select id="selectLimitInfoVoListByStandard" parameterType="Standard" resultMap="LimitInfoVoResult">
+        <include refid="selectLimitInfoVo"/>
+        <where>
+            <if test="standard != null ">and bz.JCBZ_ID = #{standard}</if>
+            <if test="standardNumber != null  and standardNumber != ''"> and JCBZ_BH = #{standardNumber}</if>
+            <if test="standardType != null "> and JCBZ_LX = #{standardType}</if>
+            <if test="standardName != null  and standardName != ''"> and JCBZ_MC = #{standardName}</if>
+            <if test="standardRemark != null  and standardRemark != ''"> and JCBZ_BZ = #{standardRemark}</if>
+            <if test="standardStartTime != null "> and JCBZ_KSSJ = #{standardStartTime}</if>
+            <if test="standardEndTime != null "> and JCBZ_JSSJ = #{standardEndTime}</if>
+        </where>
+    </select>
+
+    <delete id="deleteLimitInfoVoListByStandards">
+        delete from xlk_jcyp_jcxm_jcbz_jcff where JCBZ_ID in
+        <foreach item="standardID" collection="standardIDs" open="(" separator="," close=")">
+            #{standardID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+</mapper>

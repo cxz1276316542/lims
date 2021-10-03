@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysDeptMapper">
+
+	<resultMap type="SysDept" id="SysDeptResult">
+		<id     property="deptId"     column="BM_ID"     />
+		<result property="parentId"   column="BM_FID"   />
+		<result property="ancestors"  column="BM_ZBM"   />
+		<result property="deptName"   column="BM_MC"   />
+		<result property="orderNum"   column="BM_XSSX"   />
+		<result property="leader"     column="BM_FZR"      />
+		<result property="phone"      column="BM_DH"       />
+		<result property="email"      column="BM_YX"       />
+		<result property="status"     column="BM_ZT"      />
+		<result property="delFlag"    column="BM_SCBS"    />
+		<result property="parentName" column="parent_name" />
+		<result property="createBy"   column="BM_CJZ"   />
+		<result property="createTime" column="BM_CJSJ" />
+		<result property="updateBy"   column="BM_GXZ"   />
+		<result property="updateTime" column="BM_GXSJ" />
+	</resultMap>
+
+	<sql id="selectDeptVo">
+        select d.BM_ID, d.BM_FID, d.BM_ZBM, d.BM_MC, d.BM_XSSX, d.BM_FZR, d.BM_DH, d.BM_YX, d.BM_ZT, d.BM_SCBS, d.BM_CJZ, d.BM_CJSJ
+        from xt_bm d
+    </sql>
+
+	<select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResult">
+        <include refid="selectDeptVo"/>
+        where d.BM_SCBS = '0'
+        <if test="parentId != null and parentId != 0">
+			AND BM_FID = #{parentId}
+		</if>
+		<if test="deptName != null and deptName != ''">
+			AND BM_MC like concat('%', #{deptName}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND BM_ZT = #{status}
+		</if>
+			AND BM_ID != "99"
+
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by d.BM_FID, d.BM_XSSX
+    </select>
+
+    <select id="selectDeptListByRoleId" resultType="Integer">
+		select d.BM_ID
+		from xt_bm d
+            left join xt_js_bm rd on d.BM_ID = rd.BM_ID
+        where rd.JS_ID = #{roleId}
+            <if test="deptCheckStrictly">
+              and d.BM_ID not in (select d.BM_FID from xt_bm d inner join xt_js_bm rd on d.BM_ID = rd.BM_ID and rd.JS_ID = #{roleId})
+            </if>
+		order by d.BM_FID, d.BM_XSSX
+	</select>
+
+    <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">
+		<include refid="selectDeptVo"/>
+		where BM_ID = #{deptId}
+	</select>
+
+    <select id="checkDeptExistUser" parameterType="Long" resultType="int">
+		select count(1) from xt_yh where BM_ID = #{deptId} and BM_SCBS = '0'
+	</select>
+
+	<select id="hasChildByDeptId" parameterType="Long" resultType="int">
+		select count(1) from xt_bm
+		where BM_SCBS = '0' and BM_FID = #{deptId} limit 1
+	</select>
+
+	<select id="selectChildrenDeptById" parameterType="Long" resultMap="SysDeptResult">
+		select * from xt_bm where find_in_set(#{deptId}, BM_ZBM)
+	</select>
+
+	<select id="selectNormalChildrenDeptById" parameterType="Long" resultType="int">
+		select count(*) from xt_bm where BM_ZT = 0 and BM_SCBS = '0' and find_in_set(#{deptId}, BM_ZBM)
+	</select>
+
+	<select id="checkDeptNameUnique" resultMap="SysDeptResult">
+	    <include refid="selectDeptVo"/>
+		where BM_MC=#{deptName} and BM_FID = #{parentId} limit 1
+	</select>
+
+    <insert id="insertDept" parameterType="SysDept">
+ 		insert into xt_bm(
+ 			<if test="deptId != null and deptId != 0">BM_ID,</if>
+ 			<if test="parentId != null and parentId != 0">BM_FID,</if>
+ 			<if test="deptName != null and deptName != ''">BM_MC,</if>
+ 			<if test="ancestors != null and ancestors != ''">BM_ZBM,</if>
+ 			<if test="orderNum != null and orderNum != ''">BM_XSSX,</if>
+ 			<if test="leader != null and leader != ''">BM_FZR,</if>
+ 			<if test="phone != null and phone != ''">BM_DH,</if>
+ 			<if test="email != null and email != ''">BM_YX,</if>
+ 			<if test="status != null">BM_ZT,</if>
+ 			<if test="createBy != null and createBy != ''">BM_CJZ,</if>
+ 			BM_CJSJ
+ 		)values(
+ 			<if test="deptId != null and deptId != 0">#{deptId},</if>
+ 			<if test="parentId != null and parentId != 0">#{parentId},</if>
+ 			<if test="deptName != null and deptName != ''">#{deptName},</if>
+ 			<if test="ancestors != null and ancestors != ''">#{ancestors},</if>
+ 			<if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+ 			<if test="leader != null and leader != ''">#{leader},</if>
+ 			<if test="phone != null and phone != ''">#{phone},</if>
+ 			<if test="email != null and email != ''">#{email},</if>
+ 			<if test="status != null">#{status},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+ 		)
+	</insert>
+
+	<update id="updateDept" parameterType="SysDept">
+ 		update xt_bm
+ 		<set>
+ 			<if test="parentId != null and parentId != 0">BM_FID = #{parentId},</if>
+ 			<if test="deptName != null and deptName != ''">BM_MC = #{deptName},</if>
+ 			<if test="ancestors != null and ancestors != ''">BM_ZBM = #{ancestors},</if>
+ 			<if test="orderNum != null and orderNum != ''">BM_XSSX = #{orderNum},</if>
+ 			<if test="leader != null">leader = #{leader},</if>
+ 			<if test="phone != null">BM_DH = #{phone},</if>
+ 			<if test="email != null">BM_YX = #{email},</if>
+ 			<if test="status != null and status != ''">BM_ZT = #{status},</if>
+ 			<if test="updateBy != null and updateBy != ''">BM_GXZ = #{updateBy},</if>
+ 			BM_GXSJ = sysdate()
+ 		</set>
+ 		where BM_ID = #{deptId}
+	</update>
+
+	<update id="updateDeptChildren" parameterType="java.util.List">
+	    update xt_bm set BM_ZBM =
+	    <foreach collection="depts" item="item" index="index"
+	        separator=" " open="case BM_ID" close="end">
+	        when #{item.deptId} then #{item.ancestors}
+	    </foreach>
+	    where BM_ID in
+	    <foreach collection="depts" item="item" index="index"
+	        separator="," open="(" close=")">
+	        #{item.deptId}
+	    </foreach>
+	</update>
+
+	<update id="updateDeptStatusNormal" parameterType="Long">
+ 	    update xt_bm set BM_ZT = '0' where BM_ID in
+ 	    <foreach collection="array" item="deptId" open="(" separator="," close=")">
+        	#{deptId}
+        </foreach>
+	</update>
+
+	<delete id="deleteDeptById" parameterType="Long">
+		update xt_bm set BM_SCBS = '2' where BM_ID = #{deptId}
+	</delete>
+
+</mapper>

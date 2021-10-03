@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysMenuMapper">
+
+	<resultMap type="SysMenu" id="SysMenuResult">
+		<id     property="menuId"         column="CD_ID"        />
+		<result property="menuName"       column="CD_MC"      />
+		<result property="parentName"     column="parent_name"    />
+		<result property="parentId"       column="CD_FID"      />
+		<result property="orderNum"       column="CD_XSSX"      />
+		<result property="path"           column="CD_LYDZ"           />
+		<result property="component"      column="CD_ZJLJ"      />
+		<result property="isFrame"        column="CD_WL"       />
+		<result property="isCache"        column="CD_HC"       />
+		<result property="menuType"       column="CD_LX"      />
+		<result property="visible"        column="CD_XS"        />
+		<result property="status"         column="CD_ZT"         />
+		<result property="perms"          column="CD_QXBS"          />
+		<result property="icon"           column="CD_TB"           />
+		<result property="createBy"       column="CD_CJZ"      />
+		<result property="createTime"     column="CD_CJSJ"    />
+		<result property="updateTime"     column="CD_GXSJ"    />
+		<result property="updateBy"       column="CD_GXZ"      />
+		<result property="remark"         column="CD_BZ"         />
+	</resultMap>
+
+	<sql id="selectMenuVo">
+        select CD_ID, CD_MC, CD_FID, CD_XSSX, CD_LYDZ, CD_ZJLJ, CD_WL, CD_HC, CD_LX, CD_XS, CD_ZT, ifnull(CD_QXBS,'') as CD_QXBS, CD_TB, CD_CJSJ
+		from xt_cd
+    </sql>
+
+    <select id="selectMenuList" parameterType="SysMenu" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		<where>
+			<if test="menuName != null and menuName != ''">
+				AND CD_MC like concat('%', #{menuName}, '%')
+			</if>
+			<if test="visible != null and visible != ''">
+				AND CD_XS = #{visible}
+			</if>
+			<if test="status != null and status != ''">
+				AND CD_ZT = #{status}
+			</if>
+		</where>
+		order by CD_FID, CD_XSSX
+	</select>
+
+	<select id="selectMenuTreeAll" resultMap="SysMenuResult">
+		select distinct m.CD_ID, m.CD_FID, m.CD_MC, m.CD_LYDZ, m.CD_ZJLJ, m.CD_XS, m.CD_ZT, ifnull(m.CD_QXBS,'') as CD_QXBS, m.CD_WL, m.CD_HC, m.CD_LX, m.CD_TB, m.CD_XSSX, m.CD_CJSJ
+		from xt_cd m where m.CD_LX in ('M', 'C') and m.CD_ZT = 0
+		order by m.CD_FID, m.CD_XSSX
+	</select>
+
+	<select id="selectMenuListByUserId" parameterType="SysMenu" resultMap="SysMenuResult">
+		select distinct m.CD_ID, m.CD_FID, m.CD_MC, m.CD_LYDZ, m.CD_ZJLJ, m.CD_XS, m.CD_ZT, ifnull(m.CD_QXBS,'') as CD_QXBS, m.CD_WL, m.CD_HC, m.CD_LX, m.CD_TB, m.CD_XSSX, m.CD_CJSJ
+		from xt_cd m
+		left join xt_js_cd rm on m.CD_ID = rm.CD_ID
+		left join xt_yh_js ur on rm.JS_ID = ur.JS_ID
+		left join xt_js ro on ur.JS_ID = ro.JS_ID
+		where ur.YH_ID = #{params.userId}
+		<if test="menuName != null and menuName != ''">
+            AND CD_MC like concat('%', #{menuName}, '%')
+		</if>
+		<if test="visible != null and visible != ''">
+            AND CD_XS = #{visible}
+		</if>
+		<if test="status != null and status != ''">
+            AND CD_ZT = #{status}
+		</if>
+		order by m.CD_FID, m.CD_XSSX
+	</select>
+
+    <select id="selectMenuTreeByUserId" parameterType="Long" resultMap="SysMenuResult">
+		select distinct m.CD_ID, m.CD_FID, m.CD_MC, m.CD_LYDZ, m.CD_ZJLJ, m.CD_XS, m.CD_ZT, ifnull(m.CD_QXBS,'') as CD_QXBS, m.CD_WL, m.CD_HC, m.CD_LX, m.CD_TB, m.CD_XSSX, m.CD_CJSJ
+		from xt_cd m
+			 left join xt_js_cd rm on m.CD_ID = rm.CD_ID
+			 left join xt_yh_js ur on rm.JS_ID = ur.JS_ID
+			 left join xt_js ro on ur.JS_ID = ro.JS_ID
+			 left join xt_yh u on ur.YH_ID = u.YH_ID
+		where u.YH_ID = #{userId} and m.CD_LX in ('M', 'C') and m.CD_ZT = 0  AND ro.JS_ZT = 0
+		order by m.CD_FID, m.CD_XSSX
+	</select>
+
+	<select id="selectMenuListByRoleId" resultType="Integer">
+		select m.CD_ID
+		from xt_cd m
+            left join xt_js_cd rm on m.CD_ID = rm.CD_ID
+        where rm.JS_ID = #{roleId}
+            <if test="menuCheckStrictly">
+              and m.CD_ID not in (select m.CD_FID from xt_cd m inner join xt_js_cd rm on m.CD_ID = rm.CD_ID and rm.JS_ID = #{roleId})
+            </if>
+		order by m.CD_FID, m.CD_XSSX
+	</select>
+
+	<select id="selectMenuPerms" resultType="String">
+		select distinct m.CD_QXBS
+		from xt_cd m
+			 left join xt_js_cd rm on m.CD_ID = rm.CD_ID
+			 left join xt_yh_js ur on rm.JS_ID = ur.JS_ID
+	</select>
+
+	<select id="selectMenuPermsByUserId" parameterType="Long" resultType="String">
+		select distinct m.CD_QXBS
+		from xt_cd m
+			 left join xt_js_cd rm on m.CD_ID = rm.CD_ID
+			 left join xt_yh_js ur on rm.JS_ID = ur.JS_ID
+			 left join xt_js r on r.JS_ID = ur.JS_ID
+		where m.CD_ZT = '0' and r.JS_ZT = '0' and ur.YH_ID = #{userId}
+	</select>
+
+	<select id="selectMenuById" parameterType="Long" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		where CD_ID = #{menuId}
+	</select>
+
+	<select id="hasChildByMenuId" resultType="Integer">
+	    select count(1) from xt_cd where CD_FID = #{menuId}
+	</select>
+
+	<select id="checkMenuNameUnique" parameterType="SysMenu" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		where CD_MC=#{menuName} and CD_FID = #{parentId} limit 1
+	</select>
+
+	<update id="updateMenu" parameterType="SysMenu">
+		update xt_cd
+		<set>
+			<if test="menuName != null and menuName != ''">CD_MC = #{menuName},</if>
+			<if test="parentId != null">CD_FID = #{parentId},</if>
+			<if test="orderNum != null and orderNum != ''">CD_XSSX = #{orderNum},</if>
+			<if test="path != null and path != ''">CD_LYDZ = #{path},</if>
+			<if test="component != null">CD_ZJLJ = #{component},</if>
+			<if test="isFrame != null and isFrame != ''">CD_WL = #{isFrame},</if>
+			<if test="isCache != null and isCache != ''">CD_HC = #{isCache},</if>
+			<if test="menuType != null and menuType != ''">CD_LX = #{menuType},</if>
+			<if test="visible != null">CD_XS = #{visible},</if>
+			<if test="status != null">CD_ZT = #{status},</if>
+			<if test="perms !=null">CD_QXBS = #{perms},</if>
+			<if test="icon !=null and icon != ''">CD_TB = #{icon},</if>
+			<if test="remark != null and remark != ''">CD_BZ = #{remark},</if>
+			<if test="updateBy != null and updateBy != ''">CD_GXZ = #{updateBy},</if>
+			CD_GXSJ = sysdate()
+		</set>
+		where CD_ID = #{menuId}
+	</update>
+
+	<insert id="insertMenu" parameterType="SysMenu">
+		insert into xt_cd(
+		<if test="menuId != null and menuId != 0">CD_ID,</if>
+		<if test="parentId != null and parentId != 0">CD_FID,</if>
+		<if test="menuName != null and menuName != ''">CD_MC,</if>
+		<if test="orderNum != null and orderNum != ''">CD_XSSX,</if>
+		<if test="path != null and path != ''">CD_LYDZ,</if>
+		<if test="component != null and component != ''">CD_ZJLJ,</if>
+		<if test="isFrame != null and isFrame != ''">CD_WL,</if>
+		<if test="isCache != null and isCache != ''">CD_HC,</if>
+		<if test="menuType != null and menuType != ''">CD_LX,</if>
+		<if test="visible != null">CD_XS,</if>
+		<if test="status != null">CD_ZT,</if>
+		<if test="perms !=null and perms != ''">CD_QXBS,</if>
+		<if test="icon != null and icon != ''">CD_TB,</if>
+		<if test="remark != null and remark != ''">CD_BZ,</if>
+		<if test="createBy != null and createBy != ''">CD_CJZ,</if>
+		CD_CJSJ
+		)values(
+		<if test="menuId != null and menuId != 0">#{menuId},</if>
+		<if test="parentId != null and parentId != 0">#{parentId},</if>
+		<if test="menuName != null and menuName != ''">#{menuName},</if>
+		<if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+		<if test="path != null and path != ''">#{path},</if>
+		<if test="component != null and component != ''">#{component},</if>
+		<if test="isFrame != null and isFrame != ''">#{isFrame},</if>
+		<if test="isCache != null and isCache != ''">#{isCache},</if>
+		<if test="menuType != null and menuType != ''">#{menuType},</if>
+		<if test="visible != null">#{visible},</if>
+		<if test="status != null">#{status},</if>
+		<if test="perms !=null and perms != ''">#{perms},</if>
+		<if test="icon != null and icon != ''">#{icon},</if>
+		<if test="remark != null and remark != ''">#{remark},</if>
+		<if test="createBy != null and createBy != ''">#{createBy},</if>
+		sysdate()
+		)
+	</insert>
+
+	<delete id="deleteMenuById" parameterType="Long">
+	    delete from xt_cd where CD_ID = #{menuId}
+	</delete>
+
+</mapper>

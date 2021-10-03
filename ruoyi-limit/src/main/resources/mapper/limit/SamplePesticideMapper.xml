@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.SamplePesticideMapper">
+    
+    <resultMap type="samplePesticide" id="samplePesticideResult">
+        <result property="samplePesticideID"    column="YP_JCXM_ID"    />
+        <result property="sampleID"    column="YPLB_ID"    />
+        <result property="sampleName"    column="YP_MC"    />
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="pesticideName"    column="JCXM_MC"    />
+        <result property="detectionCenterID"    column="JCZX_ID"    />
+        <result property="isValid"    column="SJYXX_BS"    />
+    </resultMap>
+
+    <sql id="selectSamplePesticideVo">
+        select YP_JCXM_ID, yp.YPLB_ID, yp.YP_MC, xm.JCXM_ID, xm.JCXM_MC, ypxm.JCZX_ID, ypxm.SJYXX_BS
+        from xlk_yp_jcxm as ypxm
+        left join xlk_yp as yp on ypxm.YPLB_ID = yp.YPLB_ID
+        left join xlk_jcxm as xm on ypxm.JCXM_ID = xm.JCXM_ID
+    </sql>
+
+
+    <select id="selectSamplePesticideList" parameterType="samplePesticide" resultMap="samplePesticideResult">
+        <include refid="selectSamplePesticideVo"/>
+        <where>  
+            <if test="sampleID != null "> and yp.YPLB_ID = #{sampleID}</if>
+            <if test="sampleName != null and sampleName !=''"> and YP_MC like '%${sampleName}%'</if>
+            <if test="pesticideID != null "> and xm.JCXM_ID = #{pesticideID}</if>
+            <if test="pesticideName != null and pesticideName != ''"> and JCXM_MC like '%${pesticideName}%'</if>
+            <if test="detectionCenterID != null "> and ypxm.JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null "> and ypxm.SJYXX_BS = #{isValid}</if>
+        </where>
+    </select>
+
+    <select id="selectSamplePesticideExist" resultMap="samplePesticideResult" parameterType="samplePesticide">
+        <include refid="selectSamplePesticideVo"></include>
+        <where>
+            <if test="sampleID != null"> and ypxm.YPLB_ID = #{sampleID}</if>
+            <if test="pesticideID != null "> and ypxm.JCXM_ID = #{pesticideID}</if>
+            <if test="detectionCenterID != null">and ypxm.JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <select id="selectSamplePesticideById" resultMap="samplePesticideResult">
+        <include refid="selectSamplePesticideVo"/>
+        where YP_JCXM_ID = #{samplePesticideID} and ypxm.JCZX_ID = #{detectionCenterID}
+    </select>
+        
+    <insert id="insertSamplePesticide" parameterType="samplePesticide" useGeneratedKeys="true" keyProperty="samplePesticideID">
+        insert into xlk_yp_jcxm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">YPLB_ID,</if>
+            <if test="pesticideID != null">JCXM_ID,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="pesticideID != null">#{pesticideID},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSamplePesticide" parameterType="samplePesticide">
+        update xlk_yp_jcxm
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YPLB_ID = #{sampleID},</if>
+            <if test="pesticideID != null">JCXM_ID = #{pesticideID},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid},</if>
+        </trim>
+        <where>
+            <if test="samplePesticideID != null">YP_JCXM_ID = #{samplePesticideID}</if>
+            <if test="sampleID != null">and YPLB_ID = #{sampleID}</if>
+            <if test="pesticideID != null">and JCXM_ID = #{pesticideID}</if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </update>
+
+    <delete id="deleteSamplePesticideByFoodIds" >
+        delete from xlk_yp_jcxm where YPLB_ID in
+        <foreach item="foodTypeID" collection="foodTypeIDs" open="(" separator="," close=")">
+            #{foodTypeID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deleteSamplePesticideByPesticideIds">
+        delete from xlk_yp_jcxm where JCXM_ID in
+        <foreach item="pesticideID" collection="pesticideIDs" open="(" separator="," close=")">
+            #{pesticideID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+<!--    result property="sampleID"    column="YPLB_ID"    />-->
+    <delete id="deleteSamplePesticideById">
+        delete from xlk_yp_jcxm where YP_JCXM_ID = #{samplePesticideID} and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deleteSamplePesticideByIds">
+        delete from xlk_yp_jcxm where YP_JCXM_ID in 
+        <foreach item="samplePesticideID" collection="samplePesticideIDs" open="(" separator="," close=")">
+            #{samplePesticideID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+</mapper>

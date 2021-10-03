@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.DetectionStatusMapper">
+
+    <resultMap type="DetectionStatus" id="DetectionStatusResult">
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="currentStatus"    column="YPJCZT_MQZT"    />
+    </resultMap>
+
+    <sql id="selectDetectionStatusVo">
+        select YP_ID, YPJCZT_MQZT from ypjc_ypjczt
+    </sql>
+
+    <select id="selectDetectionStatusList" parameterType="DetectionStatus" resultMap="DetectionStatusResult">
+        <include refid="selectDetectionStatusVo"/>
+        <where>
+            <if test="currentStatus != null "> and YPJCZT_MQZT = #{currentStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectDetectionStatusById" parameterType="Long" resultMap="DetectionStatusResult">
+        <include refid="selectDetectionStatusVo"/>
+        where YP_ID = #{sampleID}
+    </select>
+
+    <insert id="insertDetectionStatus" parameterType="DetectionStatus">
+        insert into ypjc_ypjczt
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="currentStatus != null">YPJCZT_MQZT,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="currentStatus != null">#{currentStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDetectionStatus" parameterType="DetectionStatus">
+        update ypjc_ypjczt
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="currentStatus != null">YPJCZT_MQZT = #{currentStatus},</if>
+        </trim>
+        where YP_ID = #{sampleID}
+    </update>
+
+    <delete id="deleteDetectionStatusById" parameterType="Long">
+        delete from ypjc_ypjczt where YP_ID = #{sampleID}
+    </delete>
+
+    <delete id="deleteDetectionStatusByIds" parameterType="String">
+        delete from ypjc_ypjczt where YP_ID in
+        <foreach item="sampleID" collection="array" open="(" separator="," close=")">
+            #{sampleID}
+        </foreach>
+    </delete>
+</mapper>

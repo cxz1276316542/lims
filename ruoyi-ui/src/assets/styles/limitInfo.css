@@ -1,0 +1,53 @@
+
+  /* 头部样式 */
+.header {
+  position: absolute;
+  /*line-height: 10%;*/
+  top: 0;
+  left: 0px;
+  right: 0;
+  background-color: forestgreen;
+  padding-left: 10px;
+}
+
+.header .Title{
+  background-color: blue;
+  color: white;
+  font-size: 20px;
+  height: 70%;
+}
+
+.header .buttonList{
+  margin-top: 10px;
+  background-color: pink;
+  height: 30%;
+}
+
+
+
+
+/* 左侧样式 */
+.navbar {
+  position: absolute;
+  width: 230px;
+  height: 80%;
+  top: 100px;  /* 距离上面50像素 */
+  left: 0;
+  bottom: 0;
+  overflow-y: auto; /* 当内容过多时y轴出现滚动条 */
+  background-color: #545c64;
+}
+
+/* 主区域 */
+.main {
+  position: absolute;
+  height: 80%;
+  top: 100px;
+  left: 230px;
+  bottom: 0;
+  right: 0;  /* 距离右边0像素 */
+  padding: 10px;
+  overflow-y: auto; /* 当内容过多时y轴出现滚动条 */
+  /* background-color: red; */
+}
+

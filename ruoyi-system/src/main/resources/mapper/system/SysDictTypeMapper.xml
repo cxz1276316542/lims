@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysDictTypeMapper">
+
+	<resultMap type="SysDictType" id="SysDictTypeResult">
+		<id     property="dictId"     column="ZD_ID"     />
+		<result property="dictName"   column="ZD_MC"   />
+		<result property="dictType"   column="ZD_LX"   />
+		<result property="status"     column="ZD_ZT"      />
+		<result property="createBy"   column="ZD_CJZ"   />
+		<result property="createTime" column="ZD_CJSJ" />
+		<result property="updateBy"   column="ZD_GXZ"   />
+		<result property="updateTime" column="ZD_GXSJ" />
+	</resultMap>
+
+	<sql id="selectDictTypeVo">
+        select ZD_ID, ZD_MC, ZD_LX, ZD_ZT, ZD_CJZ, ZD_CJSJ, ZD_BZ
+		from xt_zd_lx
+    </sql>
+
+	<select id="selectDictTypeList" parameterType="SysDictType" resultMap="SysDictTypeResult">
+	    <include refid="selectDictTypeVo"/>
+		<where>
+		    <if test="dictName != null and dictName != ''">
+				AND ZD_MC like concat('%', #{dictName}, '%')
+			</if>
+			<if test="status != null and status != ''">
+				AND ZD_ZT = #{status}
+			</if>
+			<if test="dictType != null and dictType != ''">
+				AND ZD_LX like concat('%', #{dictType}, '%')
+			</if>
+			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(ZD_CJSJ,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+			</if>
+			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+				and date_format(ZD_CJSJ,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+			</if>
+	    </where>
+	</select>
+
+	<select id="selectDictTypeAll" resultMap="SysDictTypeResult">
+		<include refid="selectDictTypeVo"/>
+	</select>
+
+	<select id="selectDictTypeById" parameterType="Long" resultMap="SysDictTypeResult">
+		<include refid="selectDictTypeVo"/>
+		where ZD_ID = #{dictId}
+	</select>
+
+	<select id="selectDictTypeByType" parameterType="String" resultMap="SysDictTypeResult">
+		<include refid="selectDictTypeVo"/>
+		where ZD_LX = #{dictType}
+	</select>
+
+	<select id="checkDictTypeUnique" parameterType="String" resultMap="SysDictTypeResult">
+		<include refid="selectDictTypeVo"/>
+		where ZD_LX = #{dictType} limit 1
+	</select>
+
+	<delete id="deleteDictTypeById" parameterType="Long">
+ 		delete from xt_zd_lx where ZD_ID = #{dictId}
+ 	</delete>
+
+ 	<delete id="deleteDictTypeByIds" parameterType="Long">
+ 		delete from xt_zd_lx where ZD_ID in
+ 		<foreach collection="array" item="dictId" open="(" separator="," close=")">
+ 			#{dictId}
+        </foreach>
+ 	</delete>
+
+ 	<update id="updateDictType" parameterType="SysDictType">
+ 		update xt_zd_lx
+ 		<set>
+ 			<if test="dictName != null and dictName != ''">ZD_MC = #{dictName},</if>
+ 			<if test="dictType != null and dictType != ''">ZD_LX = #{dictType},</if>
+ 			<if test="status != null">ZD_ZT = #{status},</if>
+ 			<if test="remark != null">ZD_BZ = #{remark},</if>
+ 			<if test="updateBy != null and updateBy != ''">ZD_GXZ = #{updateBy},</if>
+ 			ZD_GXSJ = sysdate()
+ 		</set>
+ 		where ZD_ID = #{dictId}
+	</update>
+
+ 	<insert id="insertDictType" parameterType="SysDictType">
+ 		insert into xt_zd_lx(
+ 			<if test="dictName != null and dictName != ''">ZD_MC,</if>
+ 			<if test="dictType != null and dictType != ''">ZD_LX,</if>
+ 			<if test="status != null">ZD_ZT,</if>
+ 			<if test="remark != null and remark != ''">ZD_BZ,</if>
+ 			<if test="createBy != null and createBy != ''">ZD_CJZ,</if>
+ 			ZD_CJSJ
+ 		)values(
+ 			<if test="dictName != null and dictName != ''">#{dictName},</if>
+ 			<if test="dictType != null and dictType != ''">#{dictType},</if>
+ 			<if test="status != null">#{status},</if>
+ 			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+ 		)
+	</insert>
+
+</mapper>

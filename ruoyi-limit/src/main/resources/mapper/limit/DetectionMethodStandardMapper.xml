@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.DetectionMethodStandardMapper">
+    
+    <resultMap type="DetectionMethodStandard" id="DetectionMethodStandardResult">
+        <result property="detectionMethodStandardID"    column="JCFF_JCBZ_ID"    />
+        <result property="detectionMethodID"    column="JCFF_ID"    />
+        <result property="detectionMethodName"    column="JCFF_MC"    />
+        <result property="standardID"    column="JCBZ_ID"    />
+        <result property="standardNumber"    column="JCBZ_BH"    />
+        <result property="detectionCenterID"    column="JCZX_ID"    />
+        <result property="isValid"    column="SJYXX_BS"    />
+    </resultMap>
+
+    <sql id="selectDetectionMethodStandardVo">
+        select JCFF_JCBZ_ID, ff.JCFF_ID, ff.JCFF_MC, bz.JCBZ_ID, bz.JCBZ_BH, ffbz.JCZX_ID, ffbz.SJYXX_BS
+        from xlk_jcff_jcbz as ffbz
+        left join xlk_jcff as ff on ffbz.JCFF_ID = ff.JCFF_ID
+        left join xlk_jcbz as bz on ffbz.JCBZ_ID = bz.JCBZ_ID
+    </sql>
+
+
+    <select id="selectDetectionMethodStandardList" parameterType="DetectionMethodStandard" resultMap="DetectionMethodStandardResult">
+        <include refid="selectDetectionMethodStandardVo"/>
+        <where>  
+            <if test="detectionMethodID != null "> and ff.JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionMethodName != null and detectionMethodName != ''"> and JCFF_Name = #{detectionMethodName}</if>
+            <if test="standardID != null "> and bz.JCBZ_ID = #{standardID}</if>
+            <if test="standardNumber != null and standardNumber != ''"> and JCBZ_BH = #{standardNumber}</if>
+            <if test="detectionCenterID != null "> and ffbz.JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null "> and ffbz.SJYXX_BS = #{isValid}</if>
+        </where>
+    </select>
+    
+    <select id="selectDetectionMethodStandardById" resultMap="DetectionMethodStandardResult">
+        <include refid="selectDetectionMethodStandardVo"/>
+        where JCFF_JCBZ_ID = #{detectionMethodStandardID} and ffbz.JCZX_ID = #{detectionCenterID}
+    </select>
+
+    <select id="selectDetectionMethodStandardExist" parameterType="DetectionMethodStandard" resultMap="DetectionMethodStandardResult">
+        <include refid="selectDetectionMethodStandardVo"></include>
+        <where>
+            <if test="standardID != null "> and ffbz.JCBZ_ID = #{standardID}</if>
+            <if test="detectionMethodID != null "> and ffbz.JCFF_ID = #{detectionMethodID}</if>
+            <if test="detectionCenterID != null "> and ffbz.JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+    <insert id="insertDetectionMethodStandard" parameterType="DetectionMethodStandard" useGeneratedKeys="true" keyProperty="detectionMethodStandardID">
+        insert into xlk_jcff_jcbz
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="detectionMethodID != null">JCFF_ID,</if>
+            <if test="standardID != null">JCBZ_ID,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="detectionMethodID != null">#{detectionMethodID},</if>
+            <if test="standardID != null">#{standardID},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDetectionMethodStandard" parameterType="DetectionMethodStandard">
+        update xlk_jcff_jcbz
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="detectionMethodID != null">JCFF_ID = #{detectionMethodID},</if>
+            <if test="standardID != null">JCBZ_ID = #{standardID},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid},</if>
+        </trim>
+        <where>
+            <if test="detectionMethodStandardID != null">JCFF_JCBZ_ID = #{detectionMethodStandardID}</if>
+            <if test="detectionMethodID != null">and JCFF_ID = #{detectionMethodID}</if>
+            <if test="standardID != null">and JCBZ_ID = #{standardID}</if>
+            <if test="detectionCenterID != null">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </update>
+    
+    <delete id="deleteDetectionMethodStandardByStandardIds">
+        delete from xlk_jcff_jcbz where JCBZ_ID in
+        <foreach item="standardID" collection="standardIDs" open="(" separator="," close=")">
+            #{standardID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+    
+    <delete id="deleteDetectionMethodStandardByMethodIds">
+        delete from xlk_jcff_jcbz where JCFF_ID in
+        <foreach item="detectionMethodID" collection="detectionMethodIDs" open="(" separator="," close=")">
+            #{detectionMethodID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deleteDetectionMethodStandardById">
+        delete from xlk_jcff_jcbz where JCFF_JCBZ_ID = #{detectionMethodStandardID} and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deleteDetectionMethodStandardByIds">
+        delete from xlk_jcff_jcbz where JCFF_JCBZ_ID in 
+        <foreach item="detectionMethodStandardID" collection="detectionMethodStandardIDs" open="(" separator="," close=")">
+            #{detectionMethodStandardID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+</mapper>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.DetectionResultMapper">
+
+    <resultMap type="DetectionResult" id="DetectionResultResult">
+        <result property="detectionResultID"    column="JCJG_ID"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="pesticideID"    column="JCXM_ID"    />
+        <result property="inspectorID"    column="JCY_ID"    />
+        <result property="detectionData"    column="JCJG_JCSJ"    />
+        <result property="auditStatus"    column="JCJG_ZT"    />
+        <result property="operationTime"    column="JCJG_CZSJ"    />
+        <result property="remark"    column="JCJG_BZ"    />
+        <result property="taskAssignID"    column="RWFP_ID"    />
+        <result property="isChosen"    column="JCJG_SFXZ"    />
+    </resultMap>
+
+    <sql id="selectDetectionResultVo">
+        select JCJG_ID, YP_ID, YP_BH, JCXM_ID, JCY_ID, JCJG_JCSJ, JCJG_ZT, JCJG_CZSJ, JCJG_BZ ,RWFP_ID,JCJG_SFXZ from ypjc_jcjg
+    </sql>
+
+    <select id="selectDetectionResultList" parameterType="DetectionResult" resultMap="DetectionResultResult">
+        <include refid="selectDetectionResultVo"/>
+        <where>
+            <if test="detectionResultID != null "> and JCJG_ID = #{detectionResultID}</if>
+            <if test="sampleID != null "> and YP_ID = #{sampleID}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and YP_BH = #{sampleNumber}</if>
+            <if test="pesticideID != null "> and JCXM_ID = #{pesticideID}</if>
+            <if test="inspectorID != null "> and JCY_ID = #{inspectorID}</if>
+            <if test="detectionData != null "> and JCJG_JCSJ = #{detectionData}</if>
+            <if test="auditStatus != null "> and JCJG_ZT = #{auditStatus}</if>
+            <if test="operationTime != null "> and JCJG_CZSJ = #{operationTime}</if>
+            <if test="remark != null  and remark != ''"> and JCJG_BZ = #{remark}</if>
+            <if test="taskAssignID != null "> and RWFP_ID = #{taskAssignID}</if>
+            <if test="isChosen != null "> and JCJG_SFXZ = #{isChosen}</if>
+        </where>
+    </select>
+
+    <resultMap type="DetectionResultVO" id="DetectionResultResultVO">
+
+        <result property="detectionResultID"    column="JCJG_ID"    />
+        <result property="priority"    column="WTYP_YXJ"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="taskNumber"    column="RWFP_BH"    />
+        <result property="pesticideName"    column="JCXM_MC"    />
+        <result property="sampleAcademicName"    column="WTYP_XM"    />
+        <result property="inspectorName"    column="YH_NC"    />
+        <result property="inspectionRoom"    column="BM_MC"    />
+        <result property="standard"    column="JCBZ_MC"    />
+        <result property="inspectionMethodName"    column="JCFF_MC"    />
+        <result property="MaxContent"    column="ZDCLL"    />
+        <result property="adi"    column="JCXM_ADI"    />
+        <result property="detectionData"    column="JCJG_JCSJ"    />
+        <result property="auditStatus"    column="JCJG_ZT"    />
+        <result property="operationTime"    column="JCJG_CZSJ"    />
+        <result property="remark"    column="JCJG_BZ"    />
+        <result property="taskAssignID"    column="RWFP_ID"    />
+        <result property="isChosen"    column="JCJG_SFXZ"    />
+        <result property="sampleUnit"    column="JLDW_MC"    />
+        <result property="inspectorID"    column="JCY_ID"    />
+    </resultMap>
+
+
+    <sql id="selectResultVOList">
+         SELECT
+         distinct
+            DJ.WTYP_YXJ,
+            JG.JCJG_ID,
+           	JG.YP_BH,
+           	RW.RWFP_BH,
+           	NY.JCXM_MC,
+           	DJ.WTYP_XM,
+           	YH.YH_NC,
+           	BM.BM_MC,
+           	BZ.JCBZ_MC,
+           	FF.JCFF_MC,
+           	GXB.ZDCLL,
+           	NY.JCXM_ADI,
+           	JG.JCJG_JCSJ,
+           	JG.JCJG_ZT,
+           	JG.JCJG_CZSJ,
+           	JG.JCJG_BZ,
+           	JG.RWFP_ID,
+           	JG.JCJG_SFXZ,
+           	DW.JLDW_MC,
+           	JG.JCY_ID
+
+           FROM
+           	ypjc_jcjg JG
+           LEFT JOIN ypjc_wtyp DJ ON JG.YP_ID = DJ.WTYP_ID
+           LEFT JOIN xt_yh YH ON JG.JCY_ID = YH.YH_ID
+           LEFT JOIN xlk_jcxm NY ON JG.JCXM_ID = Ny.JCXM_ID
+           LEFT JOIN xlk_yp SP ON DJ.WTYP_XM = SP.YP_MC
+           LEFT JOIN xlk_jcbz BZ ON DJ.WTYP_JCBZ_ID = BZ.JCBZ_ID
+           LEFT JOIN xt_bm BM ON YH.YH_BM_ID = BM.BM_ID
+           LEFT JOIN xlk_jcyp_jcxm_jcbz_jcff GXB ON GXB.JCBZ_ID = BZ.JCBZ_ID
+           AND GXB.YPLB_ID = SP.YPLB_ID
+           AND JG.JCXM_ID = GXB.JCXM_ID
+           LEFT JOIN ypjc_jcxm_rwfp RW ON JG.YP_ID = RW.YP_ID
+           AND JG.JCY_ID = RW.RWFP_JCR_ID
+           AND JG.JCXM_ID = RW.JCXM_ID
+           LEFT JOIN xlk_jcff FF ON RW.JCFF_ID = FF.JCFF_ID
+           LEFT JOIN xlk_jldw DW ON DJ.WTYP_DW=JLDW_ID
+    </sql>
+
+<!--    初检查询-->
+    <select id="selectResultVOList" parameterType="DetectionResultVO" resultMap="DetectionResultResultVO">
+        <include refid="selectResultVOList"/>
+        <where>
+            <if test="detectionResultID != null "> and JCJG_ID = #{detectionResultID}</if>
+            <if test="taskNumber != null "> and RW.RWFP_BH = #{taskNumber}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and JG.YP_BH = #{sampleNumber}</if>
+            <if test="pesticideName != null "> and NY.JCXM_MC = #{pesticideName}</if>
+            <if test="sampleAcademicName != null "> and DJ.WTYP_XM = #{sampleAcademicName}</if>
+            <if test="inspectorName != null "> and YH.YH_NC = #{inspectorName}</if>
+            <if test="inspectionRoom != null "> and BM.BM_MC = #{inspectionRoom}</if>
+            <if test="standard != null "> and BZ.JCBZ_MC = #{standard}</if>
+            <if test="inspectionMethodName != null "> and FF.JCFF_MC = #{inspectionMethodName}</if>
+            <if test="MaxContent != null "> and GXB.ZDCLL = #{MaxContent}</if>
+            <if test="adi != null "> and NY.JCXM_ADI = #{adi}</if>
+            <if test="detectionData != null "> and JG.JCJG_JCSJ = #{detectionData}</if>
+            <if test="auditStatus != null "> and JG.JCJG_ZT = #{auditStatus}</if>
+            <if test="operationTime != null "> and JG.JCJG_CZSJ = #{operationTime}</if>
+            <if test="remark != null  and remark != ''"> and JG.JCJG_BZ = #{remark}</if>
+            <if test="priority != null "> and DJ.WTYP_YXJ = #{priority}</if>
+            <if test="auditStatus == null "> and JG.JCJG_ZT =0 </if>
+            <if test="taskAssignID != null "> and JG.RWFP_ID = #{taskAssignID}</if>
+            <if test="isChosen != null "> and JG.JCJG_SFXZ = #{isChosen}</if>
+            <if test="inspectorID != null "> and JCY_ID = #{inspectorID}</if>
+
+            order by DJ.WTYP_YXJ desc,JG.JCJG_CZSJ desc
+        </where>
+    </select>
+
+
+<!--    复检查询-->
+    <select id="selectReResultVOList" parameterType="DetectionResultVO" resultMap="DetectionResultResultVO">
+        <include refid="selectResultVOList"/>
+        <where>
+            <if test="detectionResultID != null "> and JCJG_ID = #{detectionResultID}</if>
+            <if test="taskNumber != null "> and RW.RWFP_BH = #{taskNumber}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and JG.YP_BH = #{sampleNumber}</if>
+            <if test="pesticideName != null "> and NY.JCXM_MC = #{pesticideName}</if>
+            <if test="sampleAcademicName != null "> and DJ.WTYP_XM = #{sampleAcademicName}</if>
+            <if test="inspectorName != null "> and YH.YH_NC = #{inspectorName}</if>
+            <if test="inspectionRoom != null "> and BM.BM_MC = #{inspectionRoom}</if>
+            <if test="standard != null "> and BZ.JCBZ_MC = #{standard}</if>
+            <if test="inspectionMethodName != null "> and FF.JCFF_MC = #{inspectionMethodName}</if>
+            <if test="MaxContent != null "> and GXB.ZDCLL = #{MaxContent}</if>
+            <if test="adi != null "> and NY.JCXM_ADI = #{adi}</if>
+            <if test="detectionData != null "> and JG.JCJG_JCSJ = #{detectionData}</if>
+            <if test="auditStatus != null "> and JG.JCJG_ZT = #{auditStatus}</if>
+            <if test="operationTime != null "> and JG.JCJG_CZSJ = #{operationTime}</if>
+            <if test="remark != null  and remark != ''"> and JG.JCJG_BZ = #{remark}</if>
+            <if test="priority != null "> and DJ.WTYP_YXJ = #{priority}</if>
+            <if test="auditStatus == null "> and JG.JCJG_ZT =2 </if>
+            <if test="taskAssignID != null "> and JG.RWFP_ID = #{taskAssignID}</if>
+            <if test="isChosen != null "> and JG.JCJG_SFXZ = #{isChosen}</if>
+            <if test="inspectorID != null "> and JCY_ID = #{inspectorID}</if>
+             order by DJ.WTYP_YXJ desc,JG.JCJG_CZSJ desc
+        </where>
+    </select>
+
+    <select id="selectDetectionResultById" parameterType="Long" resultMap="DetectionResultResult">
+        <include refid="selectDetectionResultVo"/>
+        where JCJG_ID = #{detectionResultID}
+    </select>
+
+    <insert id="insertDetectionResult" parameterType="DetectionResult" useGeneratedKeys="true" keyProperty="detectionResultID">
+        insert into ypjc_jcjg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="taskNumber != null">RWFP_BH,</if>
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH,</if>
+            <if test="pesticideID != null">JCXM_ID,</if>
+            <if test="inspectorID != null">JCY_ID,</if>
+            <if test="detectionData != null">JCJG_JCSJ,</if>
+            <if test="auditStatus != null">JCJG_ZT,</if>
+            <if test="operationTime != null">JCJG_CZSJ,</if>
+            <if test="remark != null">JCJG_BZ,</if>
+            <if test="taskAssignID != null">RWFP_ID,</if>
+            <if test="isChosen != null">JCJG_SFXZ,</if>
+
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNumber != null">#{taskNumber},</if>
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">#{sampleNumber},</if>
+            <if test="pesticideID != null">#{pesticideID},</if>
+            <if test="inspectorID != null">#{inspectorID},</if>
+            <if test="detectionData != null">#{detectionData},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="operationTime != null">#{operationTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="taskAssignID != null">#{taskAssignID},</if>
+            <if test="isChosen != null">#{isChosen},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDetectionResult" parameterType="DetectionResult">
+        update ypjc_jcjg
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH = #{sampleNumber},</if>
+            <if test="pesticideID != null">JCXM_ID = #{pesticideID},</if>
+            <if test="inspectorID != null">JCY_ID = #{inspectorID},</if>
+            <if test="detectionData != null">JCJG_JCSJ = #{detectionData},</if>
+            <if test="auditStatus != null">JCJG_ZT = #{auditStatus},</if>
+            <if test="operationTime != null">JCJG_CZSJ = #{operationTime},</if>
+            <if test="remark != null">JCJG_BZ = #{remark},</if>
+            <if test="taskAssignID != null">RWFP_ID= #{taskAssignID},</if>
+            <if test="isChosen != null">JCJG_SFXZ= #{isChosen},</if>
+        </trim>
+        where JCJG_ID = #{detectionResultID}
+    </update>
+
+    <delete id="deleteDetectionResultById" parameterType="Long">
+        delete from ypjc_jcjg where JCJG_ID = #{detectionResultID}
+    </delete>
+
+    <delete id="deleteDetectionResultByIds" parameterType="String">
+        delete from ypjc_jcjg where JCJG_ID in
+        <foreach item="detectionResultID" collection="array" open="(" separator="," close=")">
+            #{detectionResultID}
+        </foreach>
+    </delete>
+</mapper>

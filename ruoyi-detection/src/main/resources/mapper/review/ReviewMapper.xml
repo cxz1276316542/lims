@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.review.mapper.ReviewMapper">
+
+    <resultMap type="Review" id="ReviewResult">
+        <result property="reviewID"    column="SH_ID"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="assignOrResultID"    column="SH_RWFP_JCJG_ID"    />
+        <result property="reviewCategory"    column="SH_SHLB"    />
+        <result property="reviewConclusion"    column="SH_SHJL"    />
+        <result property="reviewOpinion"    column="SH_SHYJ"    />
+        <result property="circulation"    column="SH_LZBZ"    />
+        <result property="electronicSignature"    column="SH_DZQMDZ"    />
+        <result property="operatorID"    column="SH_CZYID"    />
+        <result property="operationTime"    column="SH_CZSJ"    />
+        <result property="remarks"    column="SH_BZ"    />
+        <result property="priority"    column="SH_YXJ"    />
+    </resultMap>
+
+    <resultMap type="ReviewVO" id="ReviewVOResult">
+        <result property="reviewID"    column="SH_ID"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="priority"    column="SH_YXJ"    />
+        <result property="reviewCategory"    column="SH_SHLB"    />
+        <result property="reviewConclusion"    column="SH_SHJL"    />
+        <result property="reviewOpinion"    column="SH_SHYJ"    />
+        <result property="circulation"    column="SH_LZBZ"    />
+        <result property="electronicSignature"    column="SH_DZQMDZ"    />
+        <result property="operatorID"    column="SH_CZYID"    />
+        <result property="operationTime"    column="SH_CZSJ"    />
+        <result property="remarks"    column="SH_BZ"    />
+        <result property="priority"    column="SH_YXJ"    />
+        <result property="assignOrResultID"    column="SH_RWFP_JCJG_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="sampleScientificName"    column="WTYP_XM"    />
+        <result property="operatorName"    column="YH_NC"    />
+        <result property="assignorID"    column="RWFP_CZYID"    />
+        <result property="registrantID"    column="WTYP_CZZID"    />
+        <result property="inspectorID"    column="JCY_ID"    />
+        <result property="reportWriterID"    column="JCBG_NGR_ID"    />
+    </resultMap>
+
+
+
+    <sql id="selectReviewVo">
+        select SH_ID, YP_ID,SH_YXJ, SH_RWFP_JCJG_ID, SH_SHLB, SH_SHJL, SH_SHYJ, SH_LZBZ, SH_DZQMDZ, SH_CZYID, SH_CZSJ, SH_BZ from ypjc_sh
+    </sql>
+
+    <select id="selectReviewList" parameterType="Review" resultMap="ReviewResult">
+        <include refid="selectReviewVo"/>
+        <where>
+            <if test="sampleID != null "> and YP_ID = #{sampleID}</if>
+            <if test="priority != null "> and SH_YXJ = #{priority}</if>
+            <if test="assignOrResultID != null "> and SH_RWFP_JCJG_ID = #{assignOrResultID}</if>
+            <if test="reviewCategory != null "> and SH_SHLB = #{reviewCategory}</if>
+            <if test="reviewConclusion != null "> and SH_SHJL = #{reviewConclusion}</if>
+            <if test="operatorID != null "> and SH_CZYID = #{operatorID}</if>
+            <if test="circulation != null "> and SH_LZBZ = #{circulation}</if>
+            <if test="operationTime != null "> and SH_CZSJ &lt;= #{operationTime}</if>
+        </where>
+    </select>
+
+    <select id="selectReviewById" parameterType="Long" resultMap="ReviewResult">
+        <include refid="selectReviewVo"/>
+        where SH_ID = #{reviewID}
+    </select>
+
+    <insert id="insertReview" parameterType="Review" useGeneratedKeys="true" keyProperty="reviewID">
+        insert into ypjc_sh
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="priority != null "> SH_YXJ,</if>
+            <if test="assignOrResultID != null">SH_RWFP_JCJG_ID,</if>
+            <if test="reviewCategory != null">SH_SHLB,</if>
+            <if test="reviewConclusion != null">SH_SHJL,</if>
+            <if test="reviewOpinion != null">SH_SHYJ,</if>
+            <if test="circulation != null">SH_LZBZ,</if>
+            <if test="electronicSignature != null">SH_DZQMDZ,</if>
+            <if test="operatorID != null">SH_CZYID,</if>
+            <if test="operationTime != null">SH_CZSJ,</if>
+            <if test="remarks != null">SH_BZ,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="priority != null ">#{priority},</if>
+            <if test="assignOrResultID != null">#{assignOrResultID},</if>
+            <if test="reviewCategory != null">#{reviewCategory},</if>
+            <if test="reviewConclusion != null">#{reviewConclusion},</if>
+            <if test="reviewOpinion != null">#{reviewOpinion},</if>
+            <if test="circulation != null">#{circulation},</if>
+            <if test="electronicSignature != null">#{electronicSignature},</if>
+            <if test="operatorID != null">#{operatorID},</if>
+            <if test="operationTime != null">#{operationTime},</if>
+            <if test="remarks != null">#{remarks},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReview" parameterType="Review">
+        update ypjc_sh
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="assignOrResultID != null">SH_RWFP_JCJG_ID = #{assignOrResultID},</if>
+            <if test="reviewCategory != null">SH_SHLB = #{reviewCategory},</if>
+            <if test="reviewConclusion != null">SH_SHJL = #{reviewConclusion},</if>
+            <if test="reviewConclusion == null">SH_SHJL = #{reviewConclusion},</if>
+            <if test="reviewOpinion != null">SH_SHYJ = #{reviewOpinion},</if>
+            <if test="circulation != null">SH_LZBZ = #{circulation},</if>
+            <if test="electronicSignature != null">SH_DZQMDZ = #{electronicSignature},</if>
+            <if test="operatorID != null">SH_CZYID = #{operatorID},</if>
+            <if test="operationTime != null">SH_CZSJ = #{operationTime},</if>
+            <if test="remarks != null">SH_BZ = #{remarks},</if>
+        </trim>
+        where SH_ID = #{reviewID}
+    </update>
+
+    <delete id="deleteReviewById" parameterType="Long">
+        delete from ypjc_sh where SH_ID = #{reviewID}
+    </delete>
+
+    <delete id="deleteReviewByIds" parameterType="String">
+        delete from ypjc_sh where SH_ID in
+        <foreach item="reviewID" collection="array" open="(" separator="," close=")">
+            #{reviewID}
+        </foreach>
+    </delete>
+
+
+    <select id="selectSampleReviewListByCategory" resultMap="ReviewResult">
+        <include refid="selectReviewVo"/>
+        <where>
+            <if test="review.reviewID != null "> and SH_ID = #{review.reviewID}</if>
+            <if test="review.sampleID != null "> and YP_ID = #{review.sampleID}</if>
+            <if test="review.priority != null "> and SH_YXJ = #{review.priority}</if>
+            <if test="review.assignOrResultID != null "> and SH_RWFP_JCJG_ID = #{review.assignOrResultID}</if>
+            <if test="categories != null "> and SH_SHLB in
+                <foreach collection="categories" item="category" index="index" open="(" close=")" separator=",">
+                    #{category}
+                </foreach>
+            </if>
+            <if test="review.reviewConclusion != null "> and SH_SHJL = #{review.reviewCategory}</if>
+            <if test="review.operatorID != null "> and SH_CZYID = #{review.operatorID}</if>
+            <if test="review.operationTime != null "> and SH_CZSJ &lt;= #{review.operationTime}</if>
+        </where>
+    </select>
+
+
+    <select id="selectReviewVOList" resultMap="ReviewVOResult">
+        select a.SH_ID, a.YP_ID, a.SH_YXJ, a.SH_RWFP_JCJG_ID, a.SH_SHLB, a.SH_SHJL, a.SH_SHYJ, a.SH_LZBZ,
+        a.SH_DZQMDZ, a.SH_CZYID, a.SH_CZSJ, a.SH_BZ, b.YP_BH, b.WTYP_XM,b.WTYP_CZZID, c.YH_NC, d.RWFP_CZYID, e.JCY_ID, f.JCBG_NGR_ID
+        from ypjc_sh a LEFT JOIN ypjc_wtyp b on a.YP_ID = b.WTYP_ID LEFT JOIN xt_yh c ON a.SH_CZYID = c.YH_ID
+        LEFT JOIN ypjc_jcxm_rwfp d ON a.SH_RWFP_JCJG_ID = d.RWFP_ID LEFT JOIN ypjc_jcjg e ON a.SH_RWFP_JCJG_ID = e.JCJG_ID
+        LEFT JOIN ypjc_jcbg f ON a.SH_RWFP_JCJG_ID = f.JCBG_ID
+        <where>
+            <if test="reviewVO.reviewID != null "> and a.SH_ID = #{reviewVO.reviewID}</if>
+            <if test="reviewVO.sampleID != null "> and a.YP_ID = #{reviewVO.sampleID}</if>
+            <if test="reviewVO.priority != null "> and a.SH_YXJ = #{reviewVO.priority}</if>
+            <if test="reviewVO.operatorID != null "> and a.SH_CZYID = #{reviewVO.operatorID}</if>
+            <if test="reviewVO.reviewCategory != null "> and a.SH_SHLB = #{reviewVO.reviewCategory}</if>
+            <if test="reviewVO.assignOrResultID != null "> and a.SH_RWFP_JCJG_ID = #{reviewVO.assignOrResultID}</if>
+            <if test="reviewVO.reviewConclusion != null "> and a.SH_SHJL = #{reviewVO.reviewConclusion}</if>
+            <if test="reviewVO.circulation != null "> and a.SH_LZBZ = #{reviewVO.circulation}</if>
+            <if test="reviewVO.operatorID != null "> and a.SH_CZYID = #{reviewVO.operatorID}</if>
+            <if test="reviewVO.reviewStartTime != null and reviewVO.reviewEndTime != null "> and a.SH_CZSJ between #{reviewVO.reviewStartTime} and date_add(#{reviewVO.reviewEndTime},interval 1 day)</if>
+            and a.SH_SHLB in
+            <foreach collection="categories" item="category" index="index" open="(" close=")" separator=",">
+                #{category}
+            </foreach>
+            <if test="reviewVO.assignorID != null ">
+                and a.SH_RWFP_JCJG_ID in (select d.RWFP_ID from ypjc_jcxm_rwfp where d.RWFP_CZYID = #{reviewVO.assignorID})
+            </if>
+            <if test="reviewVO.registrantID != null ">
+                and a.YP_ID in (select b.WTYP_ID from ypjc_wtyp where b.WTYP_CZZID = #{reviewVO.registrantID})
+            </if>
+            <if test="reviewVO.inspectorID != null ">
+                and a.SH_RWFP_JCJG_ID in (select e.JCJG_ID from ypjc_jcjg where e.JCY_ID = #{reviewVO.inspectorID})
+            </if>
+            <if test="reviewVO.reportWriterID != null ">
+                and a.SH_RWFP_JCJG_ID in (select f.JCBG_ID from ypjc_jcbg where f.JCBG_NGR_ID = #{reviewVO.reportWriterID})
+            </if>
+            and a.SH_SHJL != 0
+            and a.YP_ID in (SELECT b.WTYP_ID FROM ypjc_wtyp
+            <where>
+                <if test="reviewVO.sampleNumber != null ">and b.YP_BH LIKE CONCAT('%',#{reviewVO.sampleNumber},'%')</if>
+                <if test="reviewVO.sampleScientificName != null">and b.WTYP_XM = #{reviewVO.sampleScientificName}</if>
+            </where>
+            )
+        </where>
+        order by a.SH_YXJ desc, a.SH_CZSJ asc
+    </select>
+
+    <select id="selectNotReviewVOList" resultMap="ReviewVOResult">
+        select a.SH_ID, a.YP_ID, a.SH_YXJ, a.SH_RWFP_JCJG_ID, a.SH_SHLB, a.SH_SHJL, a.SH_SHYJ, a.SH_LZBZ,
+        a.SH_DZQMDZ, a.SH_CZYID, a.SH_CZSJ, a.SH_BZ, b.YP_BH, b.WTYP_XM, b.WTYP_CZZID, c.YH_NC, d.RWFP_CZYID, e.JCY_ID, f.JCBG_NGR_ID
+        from ypjc_sh a LEFT JOIN ypjc_wtyp b on a.YP_ID = b.WTYP_ID LEFT JOIN xt_yh c ON a.SH_CZYID = c.YH_ID
+        LEFT JOIN ypjc_jcxm_rwfp d ON a.SH_RWFP_JCJG_ID = d.RWFP_ID LEFT JOIN ypjc_jcjg e ON a.SH_RWFP_JCJG_ID = e.JCJG_ID
+        LEFT JOIN ypjc_jcbg f ON a.SH_RWFP_JCJG_ID = f.JCBG_ID
+        <where>
+            <if test="reviewVO.reviewID != null "> and a.SH_ID = #{reviewVO.reviewID}</if>
+            <if test="reviewVO.sampleID != null "> and a.YP_ID = #{reviewVO.sampleID}</if>
+            <if test="reviewVO.priority != null "> and a.SH_YXJ = #{reviewVO.priority}</if>
+            <if test="reviewVO.operatorID != null "> and a.SH_CZYID = #{reviewVO.operatorID}</if>
+            <if test="reviewVO.reviewCategory != null "> and a.SH_SHLB = #{reviewVO.reviewCategory}</if>
+            <if test="reviewVO.assignOrResultID != null "> and a.SH_RWFP_JCJG_ID = #{reviewVO.assignOrResultID}</if>
+            <if test="reviewVO.reviewConclusion != null "> and a.SH_SHJL = #{reviewVO.reviewConclusion}</if>
+            <if test="reviewVO.circulation != null "> and a.SH_LZBZ = #{reviewVO.circulation}</if>
+            <if test="reviewVO.reviewStartTime != null and reviewVO.reviewEndTime != null "> and a.SH_CZSJ between #{reviewVO.reviewStartTime} and date_add(#{reviewVO.reviewEndTime},interval 1 day)</if>
+            and a.SH_SHLB in
+            <foreach collection="categories" item="category" index="index" open="(" close=")" separator=",">
+                #{category}
+            </foreach>
+            <if test="reviewVO.assignorID != null ">
+                and a.SH_RWFP_JCJG_ID in (select d.RWFP_ID from ypjc_jcxm_rwfp where d.RWFP_CZYID = #{reviewVO.assignorID})
+            </if>
+            <if test="reviewVO.registrantID != null ">
+                and a.YP_ID in (select b.WTYP_ID from ypjc_wtyp where b.WTYP_CZZID = #{reviewVO.registrantID})
+            </if>
+            <if test="reviewVO.inspectorID != null ">
+                and a.SH_RWFP_JCJG_ID in (select e.JCJG_ID from ypjc_jcjg where e.JCY_ID = #{reviewVO.inspectorID})
+            </if>
+            <if test="reviewVO.reportWriterID != null ">
+                and a.SH_RWFP_JCJG_ID in (select f.JCBG_ID from ypjc_jcbg where f.JCBG_NGR_ID = #{reviewVO.reportWriterID})
+            </if>
+            and a.SH_SHJL = 0
+            and a.YP_ID in (SELECT b.WTYP_ID FROM ypjc_wtyp
+            <where>
+                <if test="reviewVO.sampleNumber != null ">and b.YP_BH LIKE CONCAT('%',#{reviewVO.sampleNumber},'%')</if>
+                <if test="reviewVO.sampleScientificName != null">and b.WTYP_XM = #{reviewVO.sampleScientificName}</if>
+            </where>
+            )
+        </where>
+        order by a.SH_YXJ desc, a.SH_CZSJ asc
+    </select>
+
+    <select id="selectReviewByIds" resultMap="ReviewResult">
+        <include refid="selectReviewVo"/> where SH_ID IN
+        <foreach item="reviewID" collection="array" open="(" separator="," close=")">
+            #{reviewID}
+        </foreach>
+    </select>
+
+    <update id="batchReviewPass" parameterType="Review">
+        update ypjc_sh
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="review.reviewOpinion != null">SH_SHYJ = #{review.reviewOpinion},</if>
+            <if test="review.electronicSignature != null">SH_DZQMDZ = #{review.electronicSignature},</if>
+            <if test="review.operatorID != null">SH_CZYID = #{review.operatorID},</if>
+        </trim>
+        ,SH_CZYID = #{review.operatorID}, SH_CZSJ = CURRENT_TIMESTAMP, SH_SHJL = 1, SH_LZBZ = 0
+        where SH_ID IN
+        <foreach item="reviewID" collection="reviewIDs" open="(" separator="," close=")">
+            #{reviewID}
+        </foreach>
+    </update>
+
+    <update id="updateReviewByIDs">
+        update ypjc_sh
+        <trim prefix="SET" suffixOverrides=",">
+            <!--            <if test="review.sampleID != null">YP_ID = #{sampleID},</if>-->
+            <!--            <if test="assignOrResultID != null">SH_RWFP_JCJG_ID = #{assignOrResultID},</if>-->
+            <!--            <if test="review.reviewCategory != null">SH_SHLB = #{review.reviewCategory},</if>-->
+            <if test="review.reviewConclusion != null">SH_SHJL = #{review.reviewConclusion},</if>
+            <if test="review.reviewOpinion != null">SH_SHYJ = #{review.reviewOpinion},</if>
+            <if test="review.circulation != null">SH_LZBZ = #{review.circulation},</if>
+            <if test="review.electronicSignature != null">SH_DZQMDZ = #{review.electronicSignature},</if>
+            <if test="review.operatorID != null">SH_CZYID = #{review.operatorID},</if>
+            <if test="review.operationTime != null">SH_CZSJ = #{review.operationTime},</if>
+            <if test="review.remarks != null">SH_BZ = #{review.remarks},</if>
+        </trim>
+        where SH_ID IN
+        <foreach item="reviewID" collection="reviewIDs" open="(" separator="," close=")">
+            #{reviewID}
+        </foreach>
+    </update>
+
+    <select id="countWorkLoad" resultType="int">
+        select count(*) from ypjc_sh
+        <where>
+            <if test="operatorID != null "> and SH_CZYID = #{operatorID}</if>
+            <if test="days != null "> and SH_CZSJ between date_sub(CURRENT_TIMESTAMP,interval #{days} day) and CURRENT_TIMESTAMP</if>
+            <if test="reviewConclusion != null "> and SH_SHJL = #{reviewConclusion}</if>
+        </where>
+    </select>
+
+</mapper>

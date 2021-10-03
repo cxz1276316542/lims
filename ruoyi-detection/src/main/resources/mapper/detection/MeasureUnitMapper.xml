@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.MeasureUnitMapper">
+    
+    <resultMap type="MeasureUnit" id="MeasureUnitResult">
+        <result property="measureUnitID"    column="JLDW_ID"    />
+        <result property="measureUnitName"    column="JLDW_MC"    />
+        <result property="explain"    column="JLDW_SM"    />
+        <result property="sign"    column="JLDW_BS"    />
+    </resultMap>
+
+    <sql id="selectMeasureUnitVo">
+        select JLDW_ID, JLDW_MC, JLDW_SM, JLDW_BS from xlk_jldw
+    </sql>
+
+    <select id="selectMeasureUnitList" parameterType="MeasureUnit" resultMap="MeasureUnitResult">
+        <include refid="selectMeasureUnitVo"/>
+        <where>  
+            <if test="measureUnitName != null  and measureUnitName != ''"> and JLDW_MC = #{measureUnitName}</if>
+            <if test="explain != null  and explain != ''"> and JLDW_SM = #{explain}</if>
+            <if test="sign != null "> and JLDW_BS = #{sign}</if>
+        </where>
+    </select>
+    
+    <select id="selectMeasureUnitById" parameterType="Long" resultMap="MeasureUnitResult">
+        <include refid="selectMeasureUnitVo"/>
+        where JLDW_ID = #{measureUnitID}
+    </select>
+        
+    <insert id="insertMeasureUnit" parameterType="MeasureUnit" useGeneratedKeys="true" keyProperty="measureUnitID">
+        insert into xlk_jldw
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="measureUnitName != null and measureUnitName != ''">JLDW_MC,</if>
+            <if test="explain != null">JLDW_SM,</if>
+            <if test="sign != null">JLDW_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="measureUnitName != null and measureUnitName != ''">#{measureUnitName},</if>
+            <if test="explain != null">#{explain},</if>
+            <if test="sign != null">#{sign},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMeasureUnit" parameterType="MeasureUnit">
+        update xlk_jldw
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="measureUnitName != null and measureUnitName != ''">JLDW_MC = #{measureUnitName},</if>
+            <if test="explain != null">JLDW_SM = #{explain},</if>
+            <if test="sign != null">JLDW_BS = #{sign},</if>
+        </trim>
+        where JLDW_ID = #{measureUnitID}
+    </update>
+
+    <delete id="deleteMeasureUnitById" parameterType="Long">
+        delete from xlk_jldw where JLDW_ID = #{measureUnitID}
+    </delete>
+
+    <delete id="deleteMeasureUnitByIds" parameterType="String">
+        delete from xlk_jldw where JLDW_ID in 
+        <foreach item="measureUnitID" collection="array" open="(" separator="," close=")">
+            #{measureUnitID}
+        </foreach>
+    </delete>
+</mapper>

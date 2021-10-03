@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.stock.mapper.EntryAndOutMapper">
+
+    <resultMap type="EntryAndOut" id="EntryAndOutResult">
+        <result property="entryAndOutID"    column="YPCRK_ID"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="sampleBankID"    column="YPK_ID"    />
+        <result property="entryAndOutCategory"    column="YPCRK_CRLB"    />
+        <result property="sampleQuantity"    column="YPCRK_YPSL"    />
+        <result property="operatorID"    column="YPCRK_CZYID"    />
+        <result property="operationTime"    column="YPCRK_CZSJ"    />
+        <result property="receiverID"    column="YPCRK_LYRID"    />
+        <result property="entryAndOutType"    column="YPCRK_LX"    />
+        <result property="sampleFlow"    column="YPCRK_YPLX"    />
+        <result property="destroyMethod"    column="YPCRK_XHFF"    />
+    </resultMap>
+
+    <resultMap type="EntryAndOutVO" id="EntryAndOutVO">
+        <result property="entryAndOutID"    column="YPCRK_ID"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="sampleScientificName"    column="WTYP_XM"    />
+        <result property="sampleBankID"    column="YPK_ID"    />
+        <result property="entryAndOutCategory"    column="YPCRK_CRLB"    />
+        <result property="sampleQuantity"    column="YPCRK_YPSL"    />
+        <result property="operatorID"    column="YPCRK_CZYID"    />
+        <result property="operatorName"    column="YH_NC"    />
+        <result property="operationTime"    column="YPCRK_CZSJ"    />
+        <result property="receiverID"    column="YPCRK_LYRID"    />
+<!--        <result property="receiverName"    column="YH_NC"    />-->
+        <result property="entryAndOutType"    column="YPCRK_LX"    />
+        <result property="sampleFlow"    column="YPCRK_YPLX"    />
+        <result property="destroyMethod"    column="YPCRK_XHFF"    />
+    </resultMap>
+
+    <resultMap id="Operator" type="Operator">
+        <result property="operatorID"    column="YPCRK_LYRID"    />
+        <result property="operatorName"    column="YH_NC"    />
+    </resultMap>
+
+    <sql id="selectEntryAndOutVo">
+        select YPCRK_ID, YP_ID, YPK_ID, YPCRK_CRLB, YPCRK_YPSL, YPCRK_CZYID, YPCRK_CZSJ,YPCRK_LX,YPCRK_LYRID,YPCRK_YPLX,YPCRK_XHFF from ypjc_ypcrk
+    </sql>
+
+    <select id="selectEntryAndOutList" parameterType="EntryAndOut" resultMap="EntryAndOutResult">
+        <include refid="selectEntryAndOutVo"/>
+        <where>
+            <if test="sampleID != null "> and YP_ID = #{sampleID}</if>
+            <if test="sampleBankID != null "> and YPK_ID = #{sampleBankID}</if>
+            <if test="entryAndOutType != null "> and YPCRK_LX = #{entryAndOutType}</if>
+            <if test="receiverID != null "> and YPCRK_LYRID = #{receiverID}</if>
+            <if test="entryAndOutCategory != null "> and YPCRK_CRLB = #{entryAndOutCategory}</if>
+            <if test="sampleQuantity != null "> and YPCRK_YPSL = #{sampleQuantity}</if>
+            <if test="operatorID != null "> and YPCRK_CZYID = #{operatorID}</if>
+            <if test="sampleFlow != null "> and YPCRK_YPLX = #{sampleFlow}</if>
+            <if test="destroyMethod != null "> and YPCRK_XHFF = #{destroyMethod}</if>
+            <if test="operationTime != null "> and YPCRK_CZSJ between #{operationTime} and date_add(#{operationTime},interval 1 day)</if>
+        </where>
+    </select>
+
+    <select id="selectEntryAndOutById" parameterType="Long" resultMap="EntryAndOutResult">
+        <include refid="selectEntryAndOutVo"/>
+        where YPCRK_ID = #{entryAndOutID}
+    </select>
+
+    <insert id="insertEntryAndOut" parameterType="EntryAndOut" useGeneratedKeys="true" keyProperty="entryAndOutID">
+        insert into ypjc_ypcrk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="sampleBankID != null">YPK_ID,</if>
+            <if test="receiverID != null ">YPCRK_LYRID,</if>
+            <if test="entryAndOutType != null ">YPCRK_LX,</if>
+            <if test="entryAndOutCategory != null">YPCRK_CRLB,</if>
+            <if test="sampleQuantity != null">YPCRK_YPSL,</if>
+            <if test="operatorID != null">YPCRK_CZYID,</if>
+            <if test="operationTime != null">YPCRK_CZSJ,</if>
+            <if test="sampleFlow != null ">YPCRK_YPLX,</if>
+            <if test="destroyMethod != null ">YPCRK_XHFF,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="sampleBankID != null">#{sampleBankID},</if>
+            <if test="receiverID != null ">#{receiverID},</if>
+            <if test="entryAndOutType != null ">#{entryAndOutType},</if>
+            <if test="entryAndOutCategory != null">#{entryAndOutCategory},</if>
+            <if test="sampleQuantity != null">#{sampleQuantity},</if>
+            <if test="operatorID != null">#{operatorID},</if>
+            <if test="operationTime != null">#{operationTime},</if>
+            <if test="sampleFlow != null ">#{sampleFlow},</if>
+            <if test="destroyMethod != null ">#{destroyMethod},</if>
+         </trim>
+    </insert>
+
+    <update id="updateEntryAndOut" parameterType="EntryAndOut">
+        update ypjc_ypcrk
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="sampleBankID != null">YPK_ID = #{sampleBankID},</if>
+            <if test="receiverID != null ">YPCRK_LYRID = #{receiverID},</if>
+            <if test="entryAndOutType != null ">YPCRK_LX = #{entryAndOutType},</if>
+            <if test="entryAndOutCategory != null">YPCRK_CRLB = #{entryAndOutCategory},</if>
+            <if test="sampleQuantity != null">YPCRK_YPSL = #{sampleQuantity},</if>
+            <if test="operatorID != null">YPCRK_CZYID = #{operatorID},</if>
+            <if test="operationTime != null">YPCRK_CZSJ = #{operationTime},</if>
+            <if test="sampleFlow != null ">YPCRK_YPLX = #{sampleFlow}</if>
+            <if test="destroyMethod != null ">YPCRK_XHFF = #{destroyMethod}</if>
+        </trim>
+        where YPCRK_ID = #{entryAndOutID}
+    </update>
+
+    <delete id="deleteEntryAndOutById" parameterType="Long">
+        delete from ypjc_ypcrk where YPCRK_ID = #{entryAndOutID}
+    </delete>
+
+    <delete id="deleteEntryAndOutByIds" parameterType="String">
+        delete from ypjc_ypcrk where YPCRK_ID in
+        <foreach item="entryAndOutID" collection="array" open="(" separator="," close=")">
+            #{entryAndOutID}
+        </foreach>
+    </delete>
+
+    <select id="selectEntryAndOutListBySampleIDs" resultMap="EntryAndOutResult">
+        <include refid="selectEntryAndOutVo"/>
+        <where>
+            <if test="sampleIDs != null "> and YP_ID in
+                <foreach collection="sampleIDs" separator="," open="(" close=")"
+                         item="item">
+                    #{item}
+                </foreach>
+             </if>
+            <if test="entryAndOut.sampleBankID != null "> and YPK_ID = #{entryAndOut.sampleBankID}</if>
+            <if test="entryAndOut.entryAndOutType != null "> and YPCRK_LX = #{entryAndOut.entryAndOutType}</if>
+            <if test="entryAndOut.receiverID != null "> and YPCRK_LYRID = #{entryAndOut.receiverID}</if>
+            <if test="entryAndOut.entryAndOutCategory != null "> and YPCRK_CRLB = #{entryAndOut.entryAndOutCategory}</if>
+            <if test="entryAndOut.sampleQuantity != null "> and YPCRK_YPSL = #{entryAndOut.sampleQuantity}</if>
+            <if test="entryAndOut.operatorID != null "> and YPCRK_CZYID = #{entryAndOut.operatorID}</if>
+            <if test="entryAndOut.sampleFlow != null "> and YPCRK_YPLX = #{entryAndOut.sampleFlow}</if>
+            <if test="entryAndOut.destroyMethod != null "> and YPCRK_XHFF = #{entryAndOut.destroyMethod}</if>
+            <if test="entryAndOut.operationTime != null "> and YPCRK_CZSJ between #{entryAndOut.operationTime} and date_add(#{entryAndOut.operationTime},interval 1 day)</if>
+        </where>
+        order by a.YPCRK_CZSJ desc
+    </select>
+
+
+    <select id="selectEntryAndOutVOList" resultMap="EntryAndOutVO">
+        select a.YPCRK_ID, a.YP_ID, a.YPK_ID, a.YPCRK_CRLB, a.YPCRK_YPSL, a.YPCRK_CZYID, a.YPCRK_CZSJ,
+               a.YPCRK_LX, a.YPCRK_LYRID, a.YPCRK_YPLX, a.YPCRK_XHFF, b.WTYP_XM, b.YP_BH, c.YH_NC
+        from ypjc_ypcrk a LEFT JOIN ypjc_wtyp b on a.YP_ID = b.WTYP_ID LEFT JOIN xt_yh c ON a.YPCRK_CZYID = c.YH_ID
+        <where>
+            <if test="sampleID != null "> and a.YP_ID = #{sampleID}</if>
+            <if test="sampleBankID != null "> and a.YPK_ID = #{sampleBankID}</if>
+            <if test="entryAndOutType != null "> and a.YPCRK_LX = #{entryAndOutType}</if>
+            <if test="receiverID != null "> and a.YPCRK_LYRID = #{receiverID}</if>
+            <if test="entryAndOutCategory != null "> and a.YPCRK_CRLB = #{entryAndOutCategory}</if>
+            <if test="sampleQuantity != null "> and a.YPCRK_YPSL = #{sampleQuantity}</if>
+            <if test="operatorID != null "> and a.YPCRK_CZYID = #{operatorID}</if>
+            <if test="sampleFlow != null "> and a.YPCRK_YPLX = #{sampleFlow}</if>
+            <if test="destroyMethod != null "> and a.YPCRK_XHFF = #{destroyMethod}</if>
+            <if test="entryAndOutStartTime != null and entryAndOutEndTime != null "> and a.YPCRK_CZSJ between #{entryAndOutStartTime} and date_add(#{entryAndOutEndTime},interval 1 day)</if>
+
+            and a.YP_ID in (SELECT b.WTYP_ID FROM ypjc_wtyp
+        <where>
+            <if test="sampleNumber != null ">and b.YP_BH = #{sampleNumber}</if>
+            <if test="sampleScientificName != null">and b.WTYP_XM = #{sampleScientificName}</if>
+        </where>
+        )
+        </where>
+        order by a.YPCRK_CZSJ desc
+    </select>
+
+    <select id="selectDeliverByBankID" resultMap="Operator">
+        select a.YPCRK_LYRID,b.YH_NC
+        from ypjc_ypcrk a LEFT JOIN xt_yh b on a.YPCRK_LYRID = b.YH_ID
+        where a.YPK_ID = #{sampleBankID} order by YPCRK_CZSJ asc LIMIT 1
+    </select>
+
+    <update id="updateEntryAndOutByBankID">
+        update ypjc_ypcrk
+        set YPCRK_LYRID =  #{deliverID}
+        where YPCRK_ID = (select a.YPCRK_ID from (SELECT YPCRK_ID FROM ypjc_ypcrk WHERE YPK_ID = #{sampleBankID} order by YPCRK_CZSJ asc LIMIT 1 )a);
+    </update>
+
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.LaboratoryMapper">
+
+    <resultMap type="Laboratory" id="LaboratoryResult">
+        <result property="laboratoryID"    column="JCZX_ID"    />
+        <result property="laboratoryName"    column="JCZX_MC"    />
+        <result property="laboratoryAddress"    column="JCZX_DZ"    />
+        <result property="laboratoryEmail"    column="JCZX_YX"    />
+        <result property="laboratoryTel"    column="JCZX_DH"    />
+        <result property="laboratoryLeader"    column="JCZX_FZR"    />
+        <result property="laboratoryPostCode"    column="JCZX_YZBM"    />
+        <result property="remark"    column="BZ"    />
+    </resultMap>
+
+    <sql id="selectLaboratoryVo">
+        select JCZX_ID, JCZX_MC, JCZX_DZ, JCZX_YX, JCZX_DH, JCZX_FZR, JCZX_YZBM, BZ from xt_jczx
+    </sql>
+
+    <select id="selectLaboratoryList" parameterType="Laboratory" resultMap="LaboratoryResult">
+        <include refid="selectLaboratoryVo"/>
+        <where>
+            <if test="laboratoryID != null "> and JCZX_ID = #{laboratoryID}</if>
+            <if test="laboratoryName != null  and laboratoryName != ''"> and JCZX_MC = #{laboratoryName}</if>
+            <if test="laboratoryAddress != null  and laboratoryAddress != ''"> and JCZX_DZ = #{laboratoryAddress}</if>
+            <if test="laboratoryEmail != null  and laboratoryEmail != ''"> and JCZX_YX = #{laboratoryEmail}</if>
+            <if test="laboratoryTel != null  and laboratoryTel != ''"> and JCZX_DH = #{laboratoryTel}</if>
+            <if test="laboratoryLeader != null  and laboratoryLeader != ''"> and JCZX_FZR = #{laboratoryLeader}</if>
+            <if test="laboratoryPostCode != null  and laboratoryPostCode != ''"> and JCZX_YZBM = #{laboratoryPostCode}</if>
+            <if test="remark != null  and remark != ''"> and BZ = #{remark}</if>
+        </where>
+    </select>
+
+    <select id="selectLaboratoryById" parameterType="Long" resultMap="LaboratoryResult">
+        <include refid="selectLaboratoryVo"/>
+        where JCZX_ID = #{laboratoryID}
+    </select>
+
+    <insert id="insertLaboratory" parameterType="Laboratory" useGeneratedKeys="true" keyProperty="laboratoryID">
+        insert into xt_jczx
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="laboratoryName != null and laboratoryName != ''">JCZX_MC,</if>
+            <if test="laboratoryAddress != null and laboratoryAddress != ''">JCZX_DZ,</if>
+            <if test="laboratoryEmail != null">JCZX_YX,</if>
+            <if test="laboratoryTel != null and laboratoryTel != ''">JCZX_DH,</if>
+            <if test="laboratoryLeader != null">JCZX_FZR,</if>
+            <if test="laboratoryPostCode != null">JCZX_YZBM,</if>
+            <if test="remark != null">BZ,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="laboratoryName != null and laboratoryName != ''">#{laboratoryName},</if>
+            <if test="laboratoryAddress != null and laboratoryAddress != ''">#{laboratoryAddress},</if>
+            <if test="laboratoryEmail != null">#{laboratoryEmail},</if>
+            <if test="laboratoryTel != null and laboratoryTel != ''">#{laboratoryTel},</if>
+            <if test="laboratoryLeader != null">#{laboratoryLeader},</if>
+            <if test="laboratoryPostCode != null">#{laboratoryPostCode},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLaboratory" parameterType="Laboratory">
+        update xt_jczx
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="laboratoryName != null and laboratoryName != ''">JCZX_MC = #{laboratoryName},</if>
+            <if test="laboratoryAddress != null and laboratoryAddress != ''">JCZX_DZ = #{laboratoryAddress},</if>
+            <if test="laboratoryEmail != null">JCZX_YX = #{laboratoryEmail},</if>
+            <if test="laboratoryTel != null and laboratoryTel != ''">JCZX_DH = #{laboratoryTel},</if>
+            <if test="laboratoryLeader != null">JCZX_FZR = #{laboratoryLeader},</if>
+            <if test="laboratoryPostCode != null">JCZX_YZBM = #{laboratoryPostCode},</if>
+            <if test="remark != null">BZ = #{remark},</if>
+        </trim>
+        where JCZX_ID = #{laboratoryID}
+    </update>
+
+    <delete id="deleteLaboratoryById" parameterType="Long">
+        delete from xt_jczx where JCZX_ID = #{laboratoryID}
+    </delete>
+
+    <delete id="deleteLaboratoryByIds" parameterType="String">
+        delete from xt_jczx where JCZX_ID in
+        <foreach item="laboratoryID" collection="array" open="(" separator="," close=")">
+            #{laboratoryID}
+        </foreach>
+    </delete>
+</mapper>

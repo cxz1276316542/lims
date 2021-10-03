@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.ReportMapper">
+    
+    <resultMap type="Report" id="ReportResult">
+        <result property="reportID"    column="JCBG_ID"    />
+        <result property="reportNumber"    column="JCBG_BH"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="reportResult"    column="JCBG_PDJG"    />
+        <result property="reportURL"    column="JCBG_DZ"    />
+        <result property="reportStatus"    column="JCBG_ZT"    />
+        <result property="reviewerSign"    column="JCBG_SHRQZ"    />
+        <result property="leaderSign"    column="JCBG_LDQZ"    />
+        <result property="editID"    column="JCBG_NGR_ID"    />
+        <result property="editTime"    column="JCBG_NGSJ"    />
+        <result property="issueID"    column="JCBG_QFR_ID"    />
+        <result property="issueTime"    column="JCBG_QFSJ"    />
+        <result property="printMailID"    column="JCBG_YGR_ID"    />
+        <result property="printMailTime"    column="JCBG_YGSJ"    />
+        <result property="reviewerID"    column="JCBG_SHR_ID"    />
+        <result property="reviewerTime"    column="JCBG_SHSJ"    />
+        <result property="remark"    column="JCBG_BZ"    />
+    </resultMap>
+
+    <sql id="selectReportVo">
+        select JCBG_ID, JCBG_BH, YP_ID, YP_BH, JCBG_PDJG, JCBG_DZ, JCBG_ZT, JCBG_SHRQZ, JCBG_LDQZ, JCBG_NGR_ID, JCBG_NGSJ, JCBG_QFR_ID, JCBG_QFSJ, JCBG_YGR_ID, JCBG_YGSJ, JCBG_SHR_ID, JCBG_SHSJ, JCBG_BZ from ypjc_jcbg
+    </sql>
+
+    <select id="selectReportList" parameterType="Report" resultMap="ReportResult">
+        <include refid="selectReportVo"/>
+        <where>  
+            <if test="reportID != null "> and JCBG_ID = #{reportID}</if>
+            <if test="reportNumber != null  and reportNumber != ''"> and JCBG_BH = #{reportNumber}</if>
+            <if test="sampleID != null "> and YP_ID = #{sampleID}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and YP_BH = #{sampleNumber}</if>
+            <if test="reportResult != null "> and JCBG_PDJG = #{reportResult}</if>
+            <if test="reportURL != null  and reportURL != ''"> and JCBG_DZ = #{reportURL}</if>
+            <if test="reportStatus != null "> and JCBG_ZT = #{reportStatus}</if>
+            <if test="reviewerSign != null  and reviewerSign != ''"> and JCBG_SHRQZ = #{reviewerSign}</if>
+            <if test="leaderSign != null  and leaderSign != ''"> and JCBG_LDQZ = #{leaderSign}</if>
+            <if test="editID != null "> and JCBG_NGR_ID = #{editID}</if>
+            <if test="editTime != null "> and JCBG_NGSJ = #{editTime}</if>
+            <if test="issueID != null "> and JCBG_QFR_ID = #{issueID}</if>
+            <if test="issueTime != null "> and JCBG_QFSJ = #{issueTime}</if>
+            <if test="printMailID != null "> and JCBG_YGR_ID = #{printMailID}</if>
+            <if test="printMailTime != null "> and JCBG_YGSJ = #{printMailTime}</if>
+            <if test="reviewerID != null "> and JCBG_SHR_ID = #{reviewerID}</if>
+            <if test="reviewerTime != null "> and JCBG_SHSJ = #{reviewerTime}</if>
+            <if test="remark != null  and remark != ''"> and JCBG_BZ = #{remark}</if>
+        </where>
+    </select>
+
+    <resultMap type="ReportVO" id="ReportResultVO">
+        <result property="reportID"    column="JCBG_ID"    />
+        <result property="reportNumber"    column="JCBG_BH"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="sampleAcademicName"    column="WTYP_XM"    />
+        <result property="priority"    column="WTYP_YXJ"    />
+        <result property="standard"    column="JCBZ_MC"    />
+        <result property="reportResult"    column="JCBG_PDJG"    />
+        <result property="reportStatus"    column="JCBG_ZT"    />
+        <result property="editID"    column="JCBG_NGR_ID"    />
+        <result property="editTime"    column="JCBG_NGSJ"    />
+        <result property="issueID"    column="JCBG_QFR_ID"    />
+        <result property="issueTime"    column="JCBG_QFSJ"    />
+        <result property="printMailID"    column="JCBG_YGR_ID"    />
+        <result property="printMailTime"    column="JCBG_YGSJ"    />
+        <result property="reviewerID"    column="JCBG_SHR_ID"    />
+        <result property="reviewerTime"    column="JCBG_SHSJ"    />
+        <result property="remark"    column="JCBG_BZ"    />
+    </resultMap>
+
+
+    <sql id="selectReportVOList">
+        SELECT
+                BG.JCBG_ID,
+                BG.JCBG_BH,
+                DJ.YP_BH,
+                BG.JCBG_PDJG,
+                DJ.WTYP_XM,
+                DJ.WTYP_YXJ,
+                BZ.JCBZ_MC,
+                BG.JCBG_ZT,
+                BG.JCBG_QFR_ID,
+                BG.JCBG_QFSJ,
+                bg.JCBG_NGR_ID,
+                bg.JCBG_NGSJ,
+                bg.JCBG_YGR_ID,
+                bg.JCBG_YGSJ,
+                bg.JCBG_SHR_ID,
+                bg.JCBG_SHSJ,
+                bg.JCBG_BZ
+            FROM
+                ypjc_jcbg BG,ypjc_wtyp DJ,xlk_jcbz BZ
+            </sql>
+
+    <select id="selectReportVOList" parameterType="ReportVO" resultMap="ReportResultVO">
+        <include refid="selectReportVOList"/>
+        <where>
+            and  BG.YP_ID = Dj.WTYP_ID and DJ.WTYP_JCBZ_ID = BZ.JCBZ_ID
+            <if test="reportID != null "> and JCBG_ID = #{reportID}</if>
+            <if test="reportNumber != null "> and JCBG_BH = #{reportNumber}</if>
+            <if test="sampleNumber != null  and sampleNumber != ''"> and DJ.YP_BH = #{sampleNumber}</if>
+            <if test="sampleAcademicName != null "> and DJ.WTYP_XM= #{sampleAcademicName}</if>
+            <if test="priority != null "> and DJ.WTYP_YXJ = #{priority}</if>
+            <if test="standard != null "> and JCBZ_MC = #{standard}</if>
+            <if test="reportResult != null "> and JCBG_PDJG = #{reportResult}</if>
+            <if test="reportStatus != null "> and JCBG_ZT = #{reportStatus}</if>
+            <if test="editID != null "> and JCBG_NGR_ID = #{editID}</if>
+            <if test="editTime != null "> and JCBG_NGSJ = #{editTime}</if>
+            <if test="issueID != null "> and JCBG_QFR_ID = #{issueID}</if>
+            <if test="issueTime != null "> and JCBG_QFSJ= #{issueTime}</if>
+            <if test="printMailID != null "> and JCBG_YGR_ID = #{printMailID}</if>
+            <if test="printMailTime != null "> and JCBG_YGSJ = #{printMailTime}</if>
+            <if test="reviewerID != null  and remark != ''"> and JCBG_SHR_ID = #{reviewerID}</if>
+            <if test="reviewerTime != null "> and JCBG_SHSJ = #{reviewerTime}</if>
+            <if test="remark != null  and remark != ''"> and JCBG_BZ= #{remark}</if>
+            <if test="reportStatus == null "> and JCBG_ZT in (1,3,4)</if>
+            order by JCBG_ZT desc,JCBG_QFSJ asc
+        </where>
+    </select>
+
+    <select id="selectReportById" parameterType="Long" resultMap="ReportResult">
+        <include refid="selectReportVo"/>
+        where JCBG_ID = #{reportID}
+    </select>
+
+        
+    <insert id="insertReport" parameterType="Report" useGeneratedKeys="true" keyProperty="reportID">
+        insert into ypjc_jcbg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportNumber != null and reportNumber != ''">JCBG_BH,</if>
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH,</if>
+            <if test="reportResult != null">JCBG_PDJG,</if>
+            <if test="reportURL != null and reportURL != ''">JCBG_DZ,</if>
+            <if test="reportStatus != null">JCBG_ZT,</if>
+            <if test="reviewerSign != null">JCBG_SHRQZ,</if>
+            <if test="leaderSign != null">JCBG_LDQZ,</if>
+            <if test="editID != null">JCBG_NGR_ID,</if>
+            <if test="editTime != null">JCBG_NGSJ,</if>
+            <if test="issueID != null">JCBG_QFR_ID,</if>
+            <if test="issueTime != null">JCBG_QFSJ,</if>
+            <if test="printMailID != null">JCBG_YGR_ID,</if>
+            <if test="printMailTime != null">JCBG_YGSJ,</if>
+            <if test="reviewerID != null">JCBG_SHR_ID,</if>
+            <if test="reviewerTime != null">JCBG_SHSJ,</if>
+            <if test="remark != null">JCBG_BZ,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportNumber != null and reportNumber != ''">#{reportNumber},</if>
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">#{sampleNumber},</if>
+            <if test="reportResult != null">#{reportResult},</if>
+            <if test="reportURL != null and reportURL != ''">#{reportURL},</if>
+            <if test="reportStatus != null">#{reportStatus},</if>
+            <if test="reviewerSign != null">#{reviewerSign},</if>
+            <if test="leaderSign != null">#{leaderSign},</if>
+            <if test="editID != null">#{editID},</if>
+            <if test="editTime != null">#{editTime},</if>
+            <if test="issueID != null">#{issueID},</if>
+            <if test="issueTime != null">#{issueTime},</if>
+            <if test="printMailID != null">#{printMailID},</if>
+            <if test="printMailTime != null">#{printMailTime},</if>
+            <if test="reviewerID != null">#{reviewerID},</if>
+            <if test="reviewerTime != null">#{reviewerTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateReport" parameterType="Report">
+        update ypjc_jcbg
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportNumber != null and reportNumber != ''">JCBG_BH = #{reportNumber},</if>
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="sampleNumber != null and sampleNumber != ''">YP_BH = #{sampleNumber},</if>
+            <if test="reportResult != null">JCBG_PDJG = #{reportResult},</if>
+            <if test="reportURL != null and reportURL != ''">JCBG_DZ = #{reportURL},</if>
+            <if test="reportStatus != null">JCBG_ZT = #{reportStatus},</if>
+            <if test="reviewerSign != null">JCBG_SHRQZ = #{reviewerSign},</if>
+            <if test="leaderSign != null">JCBG_LDQZ = #{leaderSign},</if>
+            <if test="editID != null">JCBG_NGR_ID = #{editID},</if>
+            <if test="editTime != null">JCBG_NGSJ = #{editTime},</if>
+            <if test="issueID != null">JCBG_QFR_ID = #{issueID},</if>
+            <if test="issueTime != null">JCBG_QFSJ = #{issueTime},</if>
+            <if test="printMailID != null">JCBG_YGR_ID = #{printMailID},</if>
+            <if test="printMailTime != null">JCBG_YGSJ = #{printMailTime},</if>
+            <if test="reviewerID != null">JCBG_SHR_ID = #{reviewerID},</if>
+            <if test="reviewerTime != null">JCBG_SHSJ = #{reviewerTime},</if>
+            <if test="remark != null">JCBG_BZ = #{remark},</if>
+        </trim>
+        where JCBG_ID = #{reportID}
+    </update>
+
+    <delete id="deleteReportById" parameterType="Long">
+        delete from ypjc_jcbg where JCBG_ID = #{reportID}
+    </delete>
+
+    <delete id="deleteReportByIds" parameterType="String">
+        delete from ypjc_jcbg where JCBG_ID in 
+        <foreach item="reportID" collection="array" open="(" separator="," close=")">
+            #{reportID}
+        </foreach>
+    </delete>
+</mapper>

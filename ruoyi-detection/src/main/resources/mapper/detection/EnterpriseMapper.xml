@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.EnterpriseMapper">
+
+    <resultMap type="Enterprise" id="EnterpriseResult">
+        <result property="enterpriseID"    column="QY_ID"    />
+        <result property="userId"    column="KH_ID"    />
+        <result property="enterpriseType"    column="QY_XZ"    />
+        <result property="enterpriseName"    column="QY_MC"    />
+        <result property="enterpriseAddress"    column="QY_DZ"    />
+        <result property="enterprisePhone"    column="QY_DH"    />
+        <result property="postalCode"    column="QY_YZBM"    />
+        <result property="Principal"    column="QY_FZR"    />
+        <result property="enterpriseEmail"    column="QY_YX"    />
+        <result property="createBy"    column="CJZ"    />
+        <result property="updateBy"    column="GXZ"    />
+        <result property="createTime"    column="CJSJ"    />
+        <result property="updateTime"    column="GXSJ"    />
+        <result property="remark"    column="BZ"    />
+    </resultMap>
+
+
+    <sql id="selectEnterpriseVo">
+        select QY_ID, KH_ID, QY_XZ, QY_MC, QY_DZ, QY_DH, QY_YZBM, QY_FZR, QY_YX, CJZ, GXZ, CJSJ, GXSJ, BZ from xt_qy
+    </sql>
+
+    <select id="selectEnterpriseList" parameterType="Enterprise" resultMap="EnterpriseResult">
+        <include refid="selectEnterpriseVo"/>
+        <where>
+            <if test="enterpriseID != null "> and QY_ID = #{enterpriseID}</if>
+            <if test="userId != null "> and KH_ID = #{userId}</if>
+            <if test="enterpriseType != null "> and QY_XZ = #{enterpriseType}</if>
+            <if test="enterpriseName != null  and enterpriseName != ''"> and QY_MC = #{enterpriseName}</if>
+            <if test="enterpriseAddress != null  and enterpriseAddress != ''"> and QY_DZ = #{enterpriseAddress}</if>
+            <if test="enterprisePhone != null  and enterprisePhone != ''"> and QY_DH = #{enterprisePhone}</if>
+            <if test="postalCode  != null  and postalCode != ''"> and QY_YZBM = #{postalCode }</if>
+            <if test="Principal != null  and Principal != ''"> and QY_FZR = #{Principal}</if>
+            <if test="enterpriseEmail != null  and enterpriseEmail != ''"> and QY_YX = #{enterpriseEmail}</if>
+            <if test="createBy != null  and createBy != ''"> and CJZ = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''"> and GXZ = #{updateBy}</if>
+            <if test="createTime != null "> and CJSJ = #{createTime}</if>
+            <if test="updateTime != null "> and GXSJ = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and BZ = #{remark}</if>
+        </where>
+    </select>
+
+    <select id="selectEnterpriseById" parameterType="Long" resultMap="EnterpriseResult">
+        <include refid="selectEnterpriseVo"/>
+        where QY_ID = #{enterpriseID}
+    </select>
+
+    <insert id="insertEnterprise" parameterType="Enterprise" useGeneratedKeys="true" keyProperty="enterpriseID">
+        insert into xt_qy
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">KH_ID,</if>
+            <if test="enterpriseType != null">QY_XZ,</if>
+            <if test="enterpriseName != null and enterpriseName != ''">QY_MC,</if>
+            <if test="enterpriseAddress != null and enterpriseAddress != ''">QY_DZ,</if>
+            <if test="enterprisePhone != null and enterprisePhone != ''">QY_DH,</if>
+            <if test="postalCode  != null">QY_YZBM,</if>
+            <if test="Principal != null">QY_FZR,</if>
+            <if test="enterpriseEmail != null">QY_YX,</if>
+            <if test="createBy != null and createBy != ''">CJZ,</if>
+            <if test="updateBy != null">GXZ,</if>
+            <if test="createTime != null">CJSJ,</if>
+            <if test="updateTime != null">GXSJ,</if>
+            <if test="remark != null">BZ,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="enterpriseType != null">#{enterpriseType},</if>
+            <if test="enterpriseName != null and enterpriseName != ''">#{enterpriseName},</if>
+            <if test="enterpriseAddress != null and enterpriseAddress != ''">#{enterpriseAddress},</if>
+            <if test="enterprisePhone != null and enterprisePhone != ''">#{enterprisePhone},</if>
+            <if test="postalCode  != null">#{postalCode },</if>
+            <if test="Principal != null">#{Principal},</if>
+            <if test="enterpriseEmail != null">#{enterpriseEmail},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateEnterprise" parameterType="Enterprise">
+        update xt_qy
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">KH_ID = #{userId},</if>
+            <if test="enterpriseType != null">QY_XZ = #{enterpriseType},</if>
+            <if test="enterpriseName != null and enterpriseName != ''">QY_MC = #{enterpriseName},</if>
+            <if test="enterpriseAddress != null and enterpriseAddress != ''">QY_DZ = #{enterpriseAddress},</if>
+            <if test="enterprisePhone != null and enterprisePhone != ''">QY_DH = #{enterprisePhone},</if>
+            <if test="postalCode  != null">QY_YZBM = #{postalCode },</if>
+            <if test="Principal != null">QY_FZR = #{Principal},</if>
+            <if test="enterpriseEmail != null">QY_YX = #{enterpriseEmail},</if>
+            <if test="createBy != null and createBy != ''">CJZ = #{createBy},</if>
+            <if test="updateBy != null">GXZ = #{updateBy},</if>
+            <if test="createTime != null">CJSJ = #{createTime},</if>
+            <if test="updateTime != null">GXSJ = #{updateTime},</if>
+            <if test="remark != null">BZ = #{remark},</if>
+        </trim>
+        where QY_ID = #{enterpriseID}
+    </update>
+
+    <delete id="deleteEnterpriseById" parameterType="Long">
+        delete from xt_qy where QY_ID = #{enterpriseID}
+    </delete>
+
+    <delete id="deleteEnterpriseByIds" parameterType="String">
+        delete from xt_qy where QY_ID in
+        <foreach item="enterpriseID" collection="array" open="(" separator="," close=")">
+            #{enterpriseID}
+        </foreach>
+    </delete>
+</mapper>

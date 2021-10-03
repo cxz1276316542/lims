@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysDictDataMapper">
+
+	<resultMap type="SysDictData" id="SysDictDataResult">
+		<id     property="dictCode"   column="ZD_BM"   />
+		<result property="dictSort"   column="ZD_PX"   />
+		<result property="dictLabel"  column="ZD_BQ"  />
+		<result property="dictValue"  column="ZD_JZ"  />
+		<result property="dictType"   column="ZD_LX"   />
+		<result property="cssClass"   column="ZD_CSS_YS"   />
+		<result property="listClass"  column="ZD_BGHXYS"  />
+		<result property="isDefault"  column="ZD_MR"  />
+		<result property="status"     column="ZD_ZT"      />
+		<result property="createBy"   column="ZD_CJZ"   />
+		<result property="createTime" column="ZD_CJSJ" />
+		<result property="updateBy"   column="ZD_GXZ"   />
+		<result property="updateTime" column="ZD_GXSJ" />
+	</resultMap>
+
+	<sql id="selectDictDataVo">
+        select ZD_BM, ZD_PX, ZD_BQ, ZD_JZ, ZD_LX, ZD_CSS_YS, ZD_BGHXYS, ZD_MR, ZD_ZT, ZD_CJZ, ZD_CJSJ, ZD_BZ
+		from xt_zd_sj
+    </sql>
+
+	<select id="selectDictDataList" parameterType="SysDictData" resultMap="SysDictDataResult">
+	    <include refid="selectDictDataVo"/>
+		<where>
+		    <if test="dictType != null and dictType != ''">
+				AND ZD_LX = #{dictType}
+			</if>
+			<if test="dictLabel != null and dictLabel != ''">
+				AND ZD_BQ like concat('%', #{dictLabel}, '%')
+			</if>
+			<if test="status != null and status != ''">
+				AND ZD_ZT = #{status}
+			</if>
+		</where>
+		order by ZD_PX asc
+	</select>
+
+	<select id="selectDictDataByType" parameterType="SysDictData" resultMap="SysDictDataResult">
+		<include refid="selectDictDataVo"/>
+		where ZD_ZT = '0' and ZD_LX = #{dictType} order by ZD_PX asc
+	</select>
+
+	<select id="selectDictLabel" resultType="String">
+		select ZD_BQ from xt_zd_sj
+		where ZD_LX = #{dictType} and ZD_JZ = #{dictValue}
+	</select>
+
+	<select id="selectDictDataById" parameterType="Long" resultMap="SysDictDataResult">
+		<include refid="selectDictDataVo"/>
+		where ZD_BM = #{dictCode}
+	</select>
+
+	<select id="countDictDataByType" resultType="Integer">
+	    select count(1) from xt_zd_sj where ZD_LX=#{dictType}
+	</select>
+
+	<delete id="deleteDictDataById" parameterType="Long">
+ 		delete from xt_zd_sj where ZD_BM = #{dictCode}
+ 	</delete>
+
+ 	<delete id="deleteDictDataByIds" parameterType="Long">
+ 		delete from xt_zd_sj where ZD_BM in
+ 		<foreach collection="array" item="dictCode" open="(" separator="," close=")">
+ 			#{dictCode}
+        </foreach>
+ 	</delete>
+
+	<update id="updateDictData" parameterType="SysDictData">
+ 		update xt_zd_sj
+ 		<set>
+ 			<if test="dictSort != null">ZD_PX = #{dictSort},</if>
+ 			<if test="dictLabel != null and dictLabel != ''">ZD_BQ = #{dictLabel},</if>
+ 			<if test="dictValue != null and dictValue != ''">ZD_JZ = #{dictValue},</if>
+ 			<if test="dictType != null and dictType != ''">ZD_LX = #{dictType},</if>
+ 			<if test="cssClass != null">ZD_CSS_YS = #{cssClass},</if>
+ 			<if test="listClass != null">ZD_BGHXYS = #{listClass},</if>
+ 			<if test="isDefault != null and isDefault != ''">ZD_MR = #{isDefault},</if>
+ 			<if test="status != null">ZD_ZT = #{status},</if>
+ 			<if test="ZD_BZ != null">ZD_BZ = #{ZD_BZ},</if>
+ 			<if test="updateBy != null and updateBy != ''">ZD_GXZ = #{updateBy},</if>
+ 			ZD_GXSJ = sysdate()
+ 		</set>
+ 		where ZD_BM = #{dictCode}
+	</update>
+
+	<update id="updateDictDataType" parameterType="String">
+ 		update xt_zd_sj set ZD_LX = #{newDictType} where ZD_LX = #{oldDictType}
+	</update>
+
+ 	<insert id="insertDictData" parameterType="SysDictData">
+ 		insert into xt_zd_sj(
+ 			<if test="dictSort != null">ZD_PX,</if>
+ 			<if test="dictLabel != null and dictLabel != ''">ZD_BQ,</if>
+ 			<if test="dictValue != null and dictValue != ''">ZD_JZ,</if>
+ 			<if test="dictType != null and dictType != ''">ZD_LX,</if>
+ 			<if test="cssClass != null and cssClass != ''">ZD_CSS_YS,</if>
+ 			<if test="listClass != null and listClass != ''">ZD_BGHXYS,</if>
+ 			<if test="isDefault != null and isDefault != ''">ZD_MR,</if>
+ 			<if test="status != null">ZD_ZT,</if>
+ 			<if test="ZD_BZ != null and ZD_BZ != ''">ZD_BZ,</if>
+ 			<if test="createBy != null and createBy != ''">ZD_CJZ,</if>
+ 			ZD_CJSJ
+ 		)values(
+ 		    <if test="dictSort != null">#{dictSort},</if>
+ 		    <if test="dictLabel != null and dictLabel != ''">#{dictLabel},</if>
+ 			<if test="dictValue != null and dictValue != ''">#{dictValue},</if>
+ 			<if test="dictType != null and dictType != ''">#{dictType},</if>
+ 			<if test="cssClass != null and cssClass != ''">#{cssClass},</if>
+ 			<if test="listClass != null and listClass != ''">#{listClass},</if>
+ 			<if test="isDefault != null and isDefault != ''">#{isDefault},</if>
+ 			<if test="status != null">#{status},</if>
+ 			<if test="ZD_BZ != null and ZD_BZ != ''">#{ZD_BZ},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+ 		)
+	</insert>
+
+</mapper>

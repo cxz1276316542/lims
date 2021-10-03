@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysOperLogMapper">
+
+	<resultMap type="SysOperLog" id="SysOperLogResult">
+		<id     property="operId"         column="RZ_ID"        />
+		<result property="title"          column="MKBT"          />
+		<result property="businessType"   column="YW_LX"  />
+		<result property="method"         column="FF_MC"         />
+		<result property="requestMethod"  column="QQ_FS" />
+		<result property="operatorType"   column="CZ_LB"  />
+		<result property="operName"       column="CZ_RY"      />
+		<result property="deptName"       column="BM_MC"      />
+		<result property="operUrl"        column="QQ_URL"       />
+		<result property="operIp"         column="QQ_IP"        />
+		<result property="operLocation"   column="CZ_DD"  />
+		<result property="operParam"      column="QQ_CS"     />
+		<result property="jsonResult"     column="FH_CS"    />
+		<result property="status"         column="CZ_ZT"         />
+		<result property="errorMsg"       column="CW_XX"      />
+		<result property="operTime"       column="CZ_SJ"      />
+	</resultMap>
+
+	<sql id="selectOperLogVo">
+        select RZ_ID, MKBT, YW_LX, FF_MC, QQ_FS, CZ_LB, CZ_RY, BM_MC, QQ_URL, QQ_IP, CZ_DD, QQ_CS, FH_CS, CZ_ZT, CW_XX, CZ_SJ
+        from xt_cz_rz
+    </sql>
+    
+	<insert id="insertOperlog" parameterType="SysOperLog">
+		insert into xt_cz_rz(MKBT, YW_LX, FF_MC, QQ_FS, CZ_LB, CZ_RY, BM_MC, QQ_URL, QQ_IP, CZ_DD, QQ_CS, FH_CS, CZ_ZT, CW_XX, CZ_SJ)
+        values (#{title}, #{businessType}, #{method}, #{requestMethod}, #{operatorType}, #{operName}, #{deptName}, #{operUrl}, #{operIp}, #{operLocation}, #{operParam}, #{jsonResult}, #{status}, #{errorMsg}, sysdate())
+	</insert>
+	
+	<select id="selectOperLogList" parameterType="SysOperLog" resultMap="SysOperLogResult">
+		<include refid="selectOperLogVo"/>
+		<where>
+			<if test="title != null and title != ''">
+				AND MKBT like concat('%', #{title}, '%')
+			</if>
+			<if test="businessType != null and businessType != ''">
+				AND YW_LX = #{businessType}
+			</if>
+			<if test="businessTypes != null and businessTypes.length > 0">
+			    AND YW_LX in
+			    <foreach collection="businessTypes" item="businessType" open="(" separator="," close=")">
+		 			#{businessType}
+		        </foreach> 
+			</if>
+			<if test="status != null">
+				AND CZ_ZT = #{status}
+			</if>
+			<if test="operName != null and operName != ''">
+				AND CZ_RY like concat('%', #{operName}, '%')
+			</if>
+			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(CZ_SJ,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+			</if>
+			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+				and date_format(CZ_SJ,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+			</if>
+		</where>
+		order by RZ_ID desc
+	</select>
+	
+	<delete id="deleteOperLogByIds" parameterType="Long">
+ 		delete from xt_cz_rz where RZ_ID in
+ 		<foreach collection="array" item="operId" open="(" separator="," close=")">
+ 			#{operId}
+        </foreach> 
+ 	</delete>
+ 	
+ 	<select id="selectOperLogById" parameterType="Long" resultMap="SysOperLogResult">
+		<include refid="selectOperLogVo"/>
+		where RZ_ID = #{operId}
+	</select>
+	
+	<update id="cleanOperLog">
+        truncate table xt_cz_rz
+    </update>
+
+</mapper> 

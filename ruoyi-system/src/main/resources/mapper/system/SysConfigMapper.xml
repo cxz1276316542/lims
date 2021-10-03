@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysConfigMapper">
+
+    <resultMap type="SysConfig" id="SysConfigResult">
+    	<id     property="configId"      column="CS_ID"      />
+        <result property="configName"    column="CS_MC"    />
+        <result property="configKey"     column="CS_JM"     />
+        <result property="configValue"   column="CS_ZM"   />
+        <result property="configType"    column="CS_LX"    />
+        <result property="createBy"      column="CS_CJZ"      />
+        <result property="createTime"    column="CS_CJSJ"    />
+        <result property="updateBy"      column="CS_GXZ"      />
+        <result property="updateTime"    column="CS_GXSJ"    />
+    </resultMap>
+
+    <sql id="selectConfigVo">
+        select CS_ID, CS_MC, CS_JM, CS_ZM, CS_LX, CS_CJZ, CS_CJSJ, CS_GXZ, CS_GXSJ, CS_BZ
+		from xt_cs
+    </sql>
+
+    <!-- 查询条件 -->
+	<sql id="sqlwhereSearch">
+		<where>
+			<if test="configId !=null">
+				and CS_ID = #{configId}
+			</if>
+			<if test="configKey !=null and configKey != ''">
+				and CS_JM = #{configKey}
+			</if>
+		</where>
+	</sql>
+
+    <select id="selectConfig" parameterType="SysConfig" resultMap="SysConfigResult">
+        <include refid="selectConfigVo"/>
+        <include refid="sqlwhereSearch"/>
+    </select>
+
+    <select id="selectConfigList" parameterType="SysConfig" resultMap="SysConfigResult">
+        <include refid="selectConfigVo"/>
+        <where>
+			<if test="configName != null and configName != ''">
+				AND CS_MC like concat('%', #{configName}, '%')
+			</if>
+			<if test="configType != null and configType != ''">
+				AND CS_LX = #{configType}
+			</if>
+			<if test="configKey != null and configKey != ''">
+				AND CS_JM like concat('%', #{configKey}, '%')
+			</if>
+			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(CS_CJSJ,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+			</if>
+			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+				and date_format(CS_CJSJ,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+			</if>
+		</where>
+    </select>
+
+    <select id="checkConfigKeyUnique" parameterType="String" resultMap="SysConfigResult">
+        <include refid="selectConfigVo"/>
+        where CS_JM = #{configKey} limit 1
+    </select>
+
+    <insert id="insertConfig" parameterType="SysConfig">
+        insert into xt_cs (
+			<if test="configName != null and configName != '' ">CS_MC,</if>
+			<if test="configKey != null and configKey != '' ">CS_JM,</if>
+			<if test="configValue != null and configValue != '' ">CS_ZM,</if>
+			<if test="configType != null and configType != '' ">CS_LX,</if>
+			<if test="createBy != null and createBy != ''">CS_CJZ,</if>
+			<if test="CS_BZ != null and CS_BZ != ''">CS_BZ,</if>
+ 			CS_CJSJ
+        )values(
+			<if test="configName != null and configName != ''">#{configName},</if>
+			<if test="configKey != null and configKey != ''">#{configKey},</if>
+			<if test="configValue != null and configValue != ''">#{configValue},</if>
+			<if test="configType != null and configType != ''">#{configType},</if>
+			<if test="createBy != null and createBy != ''">#{createBy},</if>
+			<if test="CS_BZ != null and CS_BZ != ''">#{CS_BZ},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateConfig" parameterType="SysConfig">
+        update xt_cs
+        <set>
+            <if test="configName != null and configName != ''">CS_MC = #{configName},</if>
+            <if test="configKey != null and configKey != ''">CS_JM = #{configKey},</if>
+            <if test="configValue != null and configValue != ''">CS_ZM = #{configValue},</if>
+            <if test="configType != null and configType != ''">CS_LX = #{configType},</if>
+            <if test="updateBy != null and updateBy != ''">CS_GXZ = #{updateBy},</if>
+            <if test="CS_BZ != null">CS_BZ = #{CS_BZ},</if>
+ 			CS_GXSJ = sysdate()
+        </set>
+        where CS_ID = #{configId}
+    </update>
+
+    <delete id="deleteConfigById" parameterType="Long">
+        delete from xt_cs where CS_ID = #{configId}
+    </delete>
+
+    <delete id="deleteConfigByIds" parameterType="Long">
+        delete from xt_cs where CS_ID in
+        <foreach item="configId" collection="array" open="(" separator="," close=")">
+        	#{configId}
+        </foreach>
+    </delete>
+
+</mapper>

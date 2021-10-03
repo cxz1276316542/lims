@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.stock.mapper.SampleBankMapper">
+
+    <resultMap type="SampleBank" id="SampleBankResult">
+        <result property="sampleBankID"    column="YPK_ID"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="sampleAddress"    column="YPK_DD"    />
+        <result property="sampleLocation"    column="YPK_YP_WZ"    />
+        <result property="remainQuantity"    column="YPK_YP_SYSL"    />
+        <result property="totalQuantity"    column="YPK_YP_ZSL"    />
+        <result property="measureUnit"    column="YPK_YP_JLDW"    />
+        <result property="storageTime"    column="YPK_JKSJ"    />
+        <result property="qualityGuaranteePeriod"    column="YPK_BZJZSJ"    />
+        <result property="operatorID"    column="YPT_JSRID"    />
+        <result property="status"    column="YPK_ZT"    />
+    </resultMap>
+
+    <resultMap type="SampleBankVO" id="SampleBankVO">
+        <result property="sampleBankID"    column="YPK_ID"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="sampleID"    column="YP_ID"    />
+        <result property="sampleAddress"    column="YPK_DD"    />
+        <result property="sampleScientificName"    column="WTYP_XM"    />
+        <result property="sampleLocation"    column="YPK_YP_WZ"    />
+        <result property="remainQuantity"    column="YPK_YP_SYSL"    />
+        <result property="totalQuantity"    column="YPK_YP_ZSL"    />
+        <result property="measureUnit"    column="YPK_YP_JLDW"    />
+        <result property="storageTime"    column="YPK_JKSJ"    />
+        <result property="qualityGuaranteePeriod"    column="YPK_BZJZSJ"    />
+        <result property="operatorID"    column="YPT_JSRID"    />
+        <result property="deliverID"    column="YPCRK_LYRID"    />
+        <result property="operatorName"    column="YH_NC"    />
+        <result property="status"    column="YPK_ZT"    />
+    </resultMap>
+
+    <resultMap type="AbandonVO" id="AbandonVO">
+        <result property="sampleBankID"    column="YPK_ID"    />
+        <result property="sampleID"    column="YP_ID"   />
+        <result property="measureUnit"    column="YPK_YP_JLDW"    />
+        <result property="qualityGuaranteePeriod"    column="YPK_BZJZSJ"    />
+        <result property="sampleNumber"    column="YP_BH"    />
+        <result property="sampleScientificName"    column="WTYP_XM"    />
+        <result property="operatorName"    column="YH_NC"    />
+
+        <result property="sampleQuantity"    column="YPCRK_YPSL"    />
+        <result property="operatorID"    column="YPCRK_CZYID"    />
+        <result property="operationTime"    column="YPCRK_CZSJ"    />
+        <result property="sampleFlow"    column="YPCRK_YPLX"    />
+        <result property="destroyMethod"    column="YPCRK_XHFF"    />
+    </resultMap>
+
+    <sql id="selectSampleBankVo">
+        select YPK_ID, YP_ID, YPK_DD, YPK_YP_WZ, YPK_YP_SYSL, YPK_YP_ZSL, YPK_YP_JLDW, YPK_JKSJ, YPK_BZJZSJ, YPT_JSRID, YPK_ZT from ypjc_ypk
+    </sql>
+
+    <select id="selectSampleBankList" parameterType="SampleBank" resultMap="SampleBankResult">
+        <include refid="selectSampleBankVo"/>
+        <where>
+            <if test="sampleID != null "> and YP_ID = #{sampleID}</if>
+            <if test="sampleAddress != null  and sampleAddress != ''"> and YPK_DD = #{sampleAddress}</if>
+            <if test="sampleLocation != null  and sampleLocation != ''"> and YPK_YP_WZ = #{sampleLocation}</if>
+            <if test="remainQuantity != null "> and YPK_YP_SYSL = #{remainQuantity}</if>
+            <if test="totalQuantity != null "> and YPK_YP_ZSL = #{totalQuantity}</if>
+            <if test="measureUnit != null "> and YPK_YP_JLDW = #{measureUnit}</if>
+            <if test="storageTime != null "> and YPK_JKSJ = #{storageTime}</if>
+            <if test="qualityGuaranteePeriod != null "> and YPK_BZJZSJ &lt;= #{qualityGuaranteePeriod}</if>
+            <if test="operatorID != null "> and YPT_JSRID = #{operatorID}</if>
+            <if test="status != null "> and YPK_ZT = #{status}</if>
+        </where>
+        order by YPK_JKSJ desc
+    </select>
+
+    <select id="selectSampleBankById" parameterType="Long" resultMap="SampleBankResult">
+        <include refid="selectSampleBankVo"/>
+        where YPK_ID = #{sampleBankID}
+    </select>
+
+    <select id="selectSampleBankVOById" parameterType="Long" resultMap="SampleBankVO">
+        SELECT a.YPK_ID,a.YP_ID,a.YPK_DD,a.YPK_YP_WZ,a.YPK_YP_SYSL,a.YPK_YP_ZSL,a.YPK_YP_JLDW,a.YPK_JKSJ,a.YPK_BZJZSJ,
+               a.YPT_JSRID,a.YPK_ZT,b.YP_BH,b.WTYP_XM,c.YH_NC,d.YPCRK_LYRID
+        FROM ypjc_ypk a LEFT JOIN ypjc_wtyp b on a.YP_ID = b.WTYP_ID LEFT JOIN xt_yh c ON a.YPT_JSRID = c.YH_ID LEFT JOIN (SELECT * from ypjc_ypcrk order by YPCRK_CZSJ asc LIMIT 1) d on a.YPK_ID = d.YPK_ID
+        where a.YPK_ID = #{sampleBankID}
+    </select>
+
+    <insert id="insertSampleBank" parameterType="SampleBank" useGeneratedKeys="true" keyProperty="sampleBankID">
+        insert into ypjc_ypk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID,</if>
+            <if test="sampleAddress != null and sampleAddress != ''">YPK_DD,</if>
+            <if test="sampleLocation != null and sampleLocation != ''">YPK_YP_WZ,</if>
+            <if test="remainQuantity != null">YPK_YP_SYSL,</if>
+            <if test="totalQuantity != null">YPK_YP_ZSL,</if>
+            <if test="measureUnit != null">YPK_YP_JLDW,</if>
+            <if test="storageTime != null">YPK_JKSJ,</if>
+            <if test="qualityGuaranteePeriod != null">YPK_BZJZSJ,</if>
+            <if test="operatorID != null">YPT_JSRID,</if>
+            <if test="status != null">YPK_ZT,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sampleID != null">#{sampleID},</if>
+            <if test="sampleAddress != null and sampleAddress != ''">#{sampleAddress},</if>
+            <if test="sampleLocation != null and sampleLocation != ''">#{sampleLocation},</if>
+            <if test="remainQuantity != null">#{remainQuantity},</if>
+            <if test="totalQuantity != null">#{totalQuantity},</if>
+            <if test="measureUnit != null">#{measureUnit},</if>
+            <if test="storageTime != null">#{storageTime},</if>
+            <if test="qualityGuaranteePeriod != null">#{qualityGuaranteePeriod},</if>
+            <if test="operatorID != null">#{operatorID},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSampleBank" parameterType="SampleBank">
+        update ypjc_ypk
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sampleID != null">YP_ID = #{sampleID},</if>
+            <if test="sampleAddress != null and sampleAddress != ''">YPK_DD = #{sampleAddress},</if>
+            <if test="sampleLocation != null and sampleLocation != ''">YPK_YP_WZ = #{sampleLocation},</if>
+            <if test="remainQuantity != null">YPK_YP_SYSL = #{remainQuantity},</if>
+            <if test="totalQuantity != null">YPK_YP_ZSL = #{totalQuantity},</if>
+            <if test="measureUnit != null">YPK_YP_JLDW = #{measureUnit},</if>
+            <if test="storageTime != null">YPK_JKSJ = #{storageTime},</if>
+            <if test="qualityGuaranteePeriod != null">YPK_BZJZSJ = #{qualityGuaranteePeriod},</if>
+            <if test="operatorID != null">YPT_JSRID = #{operatorID},</if>
+            <if test="status != null">YPK_ZT = #{status},</if>
+        </trim>
+        where YPK_ID = #{sampleBankID}
+    </update>
+
+    <delete id="deleteSampleBankById" parameterType="Long">
+        delete from ypjc_ypk where YPK_ID = #{sampleBankID}
+    </delete>
+
+    <delete id="deleteSampleBankByIds" parameterType="String">
+        delete from ypjc_ypk where YPK_ID in
+        <foreach item="sampleBankID" collection="array" open="(" separator="," close=")">
+            #{sampleBankID}
+        </foreach>
+    </delete>
+
+    <select id="selectSampleBankBySampleIds" resultMap="SampleBankResult">
+        <include refid="selectSampleBankVo"/>
+        where YP_ID in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="updateSampleBankAbandonByIDs">
+        update ypjc_ypk set YPK_ZT = 2,YPK_YP_SYSL = 0
+        where YPK_ID in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectSampleBankVOList" resultMap="SampleBankVO">
+        SELECT a.YPK_ID,a.YP_ID,a.YPK_DD,a.YPK_YP_WZ,a.YPK_YP_SYSL,a.YPK_YP_ZSL,a.YPK_YP_JLDW,a.YPK_JKSJ,a.YPK_BZJZSJ,
+               a.YPT_JSRID,a.YPK_ZT,b.YP_BH,b.WTYP_XM,c.YH_NC
+        FROM ypjc_ypk a LEFT JOIN ypjc_wtyp b on a.YP_ID = b.WTYP_ID LEFT JOIN xt_yh c ON a.YPT_JSRID = c.YH_ID
+--             LEFT JOIN ypjc_ypcrk d on a.YPK_ID = d.YPK_ID
+--             LEFT JOIN (SELECT * from ypjc_ypcrk order by YPCRK_CZSJ asc LIMIT 1) d on a.YPK_ID = d.YPK_ID
+--         WHERE a.YP_ID in (SELECT b.WTYP_ID FROM ypjc_wtyp WHERE b.YP_BH = 12 AND b.WTYP_XM = '小麦');
+        <where>
+            <if test="sampleID != null "> and a.YP_ID = #{sampleID}</if>
+            <if test="sampleAddress != null  and sampleAddress != ''"> and a.YPK_DD = #{sampleAddress}</if>
+            <if test="sampleLocation != null  and sampleLocation != ''"> and a.YPK_YP_WZ = #{sampleLocation}</if>
+            <if test="storageStartTime != null and storageEndTime != null "> and a.YPK_JKSJ between #{storageStartTime} and date_add(#{storageEndTime},interval 1 day)</if>
+            <if test="qualityGuaranteePeriod != null "> and a.YPK_BZJZSJ &lt;= #{qualityGuaranteePeriod}</if>
+            <if test="operatorID != null "> and a.YPT_JSRID = #{operatorID}</if>
+            <if test="status != null "> and a.YPK_ZT = #{status}</if>
+        <if test="deliverID != null">
+             and a.YPK_ID in (SELECT YPK_ID from ypjc_ypcrk where ypjc_ypcrk.YPCRK_LYRID = #{deliverID})
+        </if>
+        <if test="sampleNumber != null or sampleScientificName != null">
+        and a.YP_ID in (SELECT b.WTYP_ID FROM ypjc_wtyp
+         <where>
+             <if test="sampleNumber != null ">and b.YP_BH = #{sampleNumber}</if>
+             <if test="sampleScientificName != null">and b.WTYP_XM = #{sampleScientificName}</if>
+        </where>
+        )
+        </if>
+        </where>
+        order by a.YPK_JKSJ desc
+    </select>
+
+    <select id="selectAbandonVOList" resultMap="AbandonVO">
+        SELECT a.YPK_ID,a.YP_ID,a.YPK_YP_JLDW,a.YPK_BZJZSJ,b.YP_BH,b.WTYP_XM,d.YPCRK_YPSL,d.YPCRK_CZYID,d.YPCRK_CZSJ,
+                d.YPCRK_YPLX,d.YPCRK_XHFF
+        FROM ypjc_ypk a LEFT JOIN ypjc_wtyp b on a.YP_ID = b.WTYP_ID LEFT JOIN ypjc_ypcrk d on a.YPK_ID = d.YPK_ID and d.YPCRK_LX = 4
+        <where>
+            <if test="sampleID != null "> and a.YP_ID = #{sampleID}</if>
+            <if test="qualityGuaranteePeriod != null "> and a.YPK_BZJZSJ between #{qualityGuaranteePeriod} and date_add(#{qualityGuaranteePeriod},interval 1 day)</if>
+            <if test="operatorID != null "> and a.YPT_JSRID = #{operatorID}</if>
+            <if test="operationStartTime != null and operationEndTime != null"> and YPCRK_CZSJ between #{operationStartTime} and date_add(#{operationEndTime},interval 1 day) </if>
+
+        and a.YPK_ZT = 2 and a.YP_ID in (SELECT b.WTYP_ID FROM ypjc_wtyp
+        <where>
+            <if test="sampleNumber != null ">and b.YP_BH = #{sampleNumber}</if>
+            <if test="sampleScientificName != null">and b.WTYP_XM = #{sampleScientificName}</if>
+        </where>
+        )
+        </where>
+        order by a.YPK_JKSJ desc
+    </select>
+
+</mapper>

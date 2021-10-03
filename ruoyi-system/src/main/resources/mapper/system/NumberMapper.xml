@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.NumberMapper">
+
+    <resultMap type="Number" id="NumberResult">
+        <result property="numberID"    column="BH_ID"    />
+        <result property="numberTypeID"    column="BHZD_LB"    />
+        <result property="content"    column="BHZD_NR"    />
+        <result property="contentLength"    column="BHZD_ZDCD"    />
+        <result property="description"    column="BHZD_ZDMS"    />
+        <result property="order"    column="BHZD_SX"    />
+        <result property="remark"    column="BHZD_BZ"    />
+    </resultMap>
+
+    <sql id="selectNumberVo">
+        select BH_ID, BHZD_LB, BHZD_NR, BHZD_ZDCD, BHZD_ZDMS, BHZD_SX, BHZD_BZ from xt_bhzd
+    </sql>
+
+    <select id="selectNumberList" parameterType="Number" resultMap="NumberResult">
+        <include refid="selectNumberVo"/>
+        <where>
+            <if test="numberTypeID != null "> and BHZD_LB = #{numberTypeID}</if>
+            <if test="content != null  and content != ''"> and BHZD_NR = #{content}</if>
+            <if test="contentLength != null "> and BHZD_ZDCD = #{contentLength}</if>
+            <if test="description != null  and description != ''"> and BHZD_ZDMS = #{description}</if>
+            <if test="order != null "> and BHZD_SX = #{order}</if>
+            <if test="remark != null  and remark != ''"> and BHZD_BZ = #{remark}</if>
+        </where>
+    </select>
+
+    <select id="selectNumberById" parameterType="Long" resultMap="NumberResult">
+        <include refid="selectNumberVo"/>
+        where BH_ID = #{numberID}
+    </select>
+
+    <insert id="insertNumber" parameterType="Number" useGeneratedKeys="true" keyProperty="numberID">
+        insert into xt_bhzd
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="numberTypeID != null">BHZD_LB,</if>
+            <if test="content != null">BHZD_NR,</if>
+            <if test="contentLength != null">BHZD_ZDCD,</if>
+            <if test="description != null">BHZD_ZDMS,</if>
+            <if test="order != null">BHZD_SX,</if>
+            <if test="remark != null">BHZD_BZ,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="numberTypeID != null">#{numberTypeID},</if>
+            <if test="content != null">#{content},</if>
+            <if test="contentLength != null">#{contentLength},</if>
+            <if test="description != null">#{description},</if>
+            <if test="order != null">#{order},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNumber" parameterType="Number">
+        update xt_bhzd
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="numberTypeID != null">BHZD_LB = #{numberTypeID},</if>
+            <if test="content != null">BHZD_NR = #{content},</if>
+            <if test="contentLength != null">BHZD_ZDCD = #{contentLength},</if>
+            <if test="description != null">BHZD_ZDMS = #{description},</if>
+            <if test="order != null">BHZD_SX = #{order},</if>
+            <if test="remark != null">BHZD_BZ = #{remark},</if>
+        </trim>
+        where BH_ID = #{numberID}
+    </update>
+
+    <delete id="deleteNumberById" parameterType="Long">
+        delete from xt_bhzd where BH_ID = #{numberID}
+    </delete>
+
+    <delete id="deleteNumberByIds" parameterType="String">
+        delete from xt_bhzd where BH_ID in
+        <foreach item="numberID" collection="array" open="(" separator="," close=")">
+            #{numberID}
+        </foreach>
+    </delete>
+</mapper>

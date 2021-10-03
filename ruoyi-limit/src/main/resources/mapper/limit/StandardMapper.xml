@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.StandardMapper">
+    
+    <resultMap type="Standard" id="StandardResult">
+        <result property="standard"    column="JCBZ_ID"    />
+        <result property="standardNumber"    column="JCBZ_BH"    />
+        <result property="standardType"    column="JCBZ_LX"    />
+        <result property="standardName"    column="JCBZ_MC"    />
+        <result property="standardRemark"    column="JCBZ_BZ"    />
+        <result property="standardStartTime"    column="JCBZ_KSSJ"    />
+        <result property="standardEndTime"    column="JCBZ_JSSJ"    />
+        <result property="detectionCenterID" column="JCZX_ID"/>
+        <result property="isValid" column="SJYXX_BS"/>
+    </resultMap>
+
+    <sql id="selectStandardVo">
+        select JCBZ_ID, JCBZ_BH, JCBZ_LX, JCBZ_MC, JCBZ_BZ, JCBZ_KSSJ, JCBZ_JSSJ, JCZX_ID, SJYXX_BS from xlk_jcbz
+    </sql>
+
+    <!-- 获取检测标准名称 和 对应检测标准实体 Map -->
+    <select id="selectStandardIDNameMap" resultMap="StandardResult">
+        select JCBZ_ID, JCBZ_BH from xlk_jcbz
+        where JCZX_ID = #{detectionCenterID}
+    </select>
+    <select id="selectStandardMap" resultType="java.util.HashMap">
+        select JCBZ_ID, JCBZ_BH from xlk_jcbz
+        where JCZX_ID = #{detectionCenterID}
+    </select>
+
+    <select id="selectStandardList" parameterType="Standard" resultMap="StandardResult">
+        <include refid="selectStandardVo"/>
+        <where>  
+            <if test="standardNumber != null  and standardNumber != ''"> and JCBZ_BH like '%${standardNumber}%'</if>
+            <if test="standardType != null "> and JCBZ_LX = #{standardType}</if>
+            <if test="standardName != null  and standardName != ''"> and JCBZ_MC like '%${standardName}%'</if>
+            <if test="standardRemark != null  and standardRemark != ''"> and JCBZ_BZ like '%${standardRemark}%'</if>
+            <if test="standardStartTime != null "> and JCBZ_KSSJ = #{standardStartTime}</if>
+            <if test="standardEndTime != null "> and JCBZ_JSSJ = #{standardEndTime}</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null ">and SJYXX_BS = #{isValid}</if>
+        </where>
+        order by JCBZ_KSSJ desc , JCBZ_LX asc
+    </select>
+
+    <select id="selectStandardExist" parameterType="Standard" resultMap="StandardResult">
+        <include refid="selectStandardVo"/>
+        <where>
+            <if test="standardNumber != null  and standardNumber != ''"> and JCBZ_BH = #{standardNumber}</if>
+            <if test="detectionCenterID != null ">and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+    
+    <select id="selectStandardById" parameterType="Long" resultMap="StandardResult">
+        <include refid="selectStandardVo"/>
+        where JCBZ_ID = #{standard} and JCZX_ID = #{detectionCenterID}
+    </select>
+        
+    <insert id="insertStandard" parameterType="Standard" useGeneratedKeys="true" keyProperty="standard">
+        insert into xlk_jcbz
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="standardNumber != null and standardNumber != ''">JCBZ_BH,</if>
+            <if test="standardType != null">JCBZ_LX,</if>
+            <if test="standardName != null and standardName != ''">JCBZ_MC,</if>
+            <if test="standardRemark != null">JCBZ_BZ,</if>
+            <if test="standardStartTime != null">JCBZ_KSSJ,</if>
+            <if test="standardEndTime != null">JCBZ_JSSJ,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="standardNumber != null and standardNumber != ''">#{standardNumber},</if>
+            <if test="standardType != null">#{standardType},</if>
+            <if test="standardName != null and standardName != ''">#{standardName},</if>
+            <if test="standardRemark != null">#{standardRemark},</if>
+            <if test="standardStartTime != null">#{standardStartTime},</if>
+            <if test="standardEndTime != null">#{standardEndTime},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStandard" parameterType="Standard">
+        update xlk_jcbz
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="standardNumber != null and standardNumber != ''">JCBZ_BH = #{standardNumber},</if>
+            <if test="standardType != null">JCBZ_LX = #{standardType},</if>
+            <if test="standardName != null and standardName != ''">JCBZ_MC = #{standardName},</if>
+            <if test="standardRemark != null">JCBZ_BZ = #{standardRemark},</if>
+            <if test="standardStartTime != null">JCBZ_KSSJ = #{standardStartTime},</if>
+            <if test="standardEndTime != null">JCBZ_JSSJ = #{standardEndTime},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid}</if>
+        </trim>
+        where JCBZ_ID = #{standard} and JCZX_ID = #{detectionCenterID}
+    </update>
+
+    <delete id="deleteStandardById">
+        delete from xlk_jcbz where JCBZ_ID = #{standard} and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deleteStandardByIds">
+        delete from xlk_jcbz where JCBZ_ID in 
+        <foreach item="standard" collection="standards" open="(" separator="," close=")">
+            #{standard}
+        </foreach>
+    </delete>
+</mapper>

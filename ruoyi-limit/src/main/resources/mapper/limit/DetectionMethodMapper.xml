@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.limit.mapper.DetectionMethodMapper">
+    
+    <resultMap type="DetectionMethod" id="DetectionMethodResult">
+        <result property="detectionMethodID"    column="JCFF_ID"    />
+        <result property="detectionMethodName"    column="JCFF_MC"    />
+        <result property="detectionMethodInfo"    column="JCFF_CZMS"    />
+        <result property="detectionMethodURL"    column="JCFF_DZ"    />
+        <result property="detectionCenterID" column="JCZX_ID"/>
+        <result property="isValid" column="SJYXX_BS"/>
+    </resultMap>
+
+    <!--<resultMap type="DetectionMethodDTO" id="DetectionMethodDTOResult">
+        <result property="detectionMethodID"    column="JCFF_ID"    />
+        <result property="detectionMethodName"    column="JCFF_MC"    />
+        <result property="detectionCenterID" column="JCZX_ID"/>
+    </resultMap>-->
+
+    <sql id="selectDetectionMethodVo">
+        select JCFF_ID, JCFF_MC, JCFF_CZMS, JCFF_DZ, JCZX_ID, SJYXX_BS from xlk_jcff
+    </sql>
+
+    <!-- 获取检测方法名称 和 对应 检测方法实体 map   -->
+    <select id="selectDetectionMethodNameMap" parameterType="Long" resultMap="DetectionMethodResult">
+        select JCFF_ID, JCFF_MC from xlk_jcff
+        <where>
+            SJYXX_BS = 1
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <!-- 获取检测方法ID 和 对应 检测方法实体 map   -->
+    <select id="selectDetectionMethodIDMap" parameterType="Long" resultMap="DetectionMethodResult">
+        select JCFF_ID, JCFF_MC from xlk_jcff
+        <where>
+            SJYXX_BS = 1
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <select id="selectDetectionMethodList" parameterType="DetectionMethod" resultMap="DetectionMethodResult">
+        <include refid="selectDetectionMethodVo"/>
+        <where>  
+            <if test="detectionMethodName != null  and detectionMethodName != ''"> and JCFF_MC like concat('%',#{detectionMethodName},'%') </if>
+            <if test="detectionMethodInfo != null  and detectionMethodInfo != ''"> and JCFF_CZMS like concat('%',#{detectionMethodInfo},'%') </if>
+            <if test="detectionMethodURL != null  and detectionMethodURL != ''"> and JCFF_DZ like concat('%',#{detectionMethodURL},'%')</if>
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+            <if test="isValid != null"> and SJYXX_BS = #{isValid}</if>
+        </where>
+        order by SJYXX_BS desc,JCFF_MC asc
+    </select>
+    
+    <select id="selectDetectionMethodById" resultMap="DetectionMethodResult">
+        <include refid="selectDetectionMethodVo"/>
+        <where>
+            <if test="detectionMethodID != null ">JCFF_ID = #{detectionMethodID} </if>
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <select id="selectDetectionMethodByName" parameterType="String" resultMap="DetectionMethodResult">
+        <include refid="selectDetectionMethodVo"/>
+        <where>
+            <if test="detectionMethodName != null and detectionMethodName != ''">JCFF_MC = #{detectionMethodName}</if>
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <select id="isExistDetectionMethod" parameterType="DetectionMethod" resultType="int">
+        select count(*) from xlk_jcff
+        <where>
+            <if test="detectionMethodID != null ">JCFF_ID = #{detectionMethodID} </if>
+            <if test="detectionMethodName != null and detectionMethodName != ''"> and JCFF_MC = #{detectionMethodName}</if>
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </select>
+
+    <insert id="insertDetectionMethod" parameterType="DetectionMethod" useGeneratedKeys="true" keyProperty="detectionMethodID">
+        insert into xlk_jcff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="detectionMethodName != null and detectionMethodName != ''">JCFF_MC,</if>
+            <if test="detectionMethodInfo != null">JCFF_CZMS,</if>
+            <if test="detectionMethodURL != null">JCFF_DZ,</if>
+            <if test="detectionCenterID != null">JCZX_ID,</if>
+            <if test="isValid != null">SJYXX_BS,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="detectionMethodName != null and detectionMethodName != ''">#{detectionMethodName},</if>
+            <if test="detectionMethodInfo != null">#{detectionMethodInfo},</if>
+            <if test="detectionMethodURL != null">#{detectionMethodURL},</if>
+            <if test="detectionCenterID != null">#{detectionCenterID},</if>
+            <if test="isValid != null">#{isValid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDetectionMethod" parameterType="DetectionMethod">
+        update xlk_jcff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="detectionMethodName != null and detectionMethodName != ''">JCFF_MC = #{detectionMethodName},</if>
+            <if test="detectionMethodInfo != null">JCFF_CZMS = #{detectionMethodInfo},</if>
+            <if test="detectionMethodURL != null">JCFF_DZ = #{detectionMethodURL},</if>
+            <if test="detectionCenterID != null">JCZX_ID = #{detectionCenterID},</if>
+            <if test="isValid != null">SJYXX_BS = #{isValid},</if>
+        </trim>
+        <where>
+            <if test="detectionMethodID != null ">JCFF_ID = #{detectionMethodID} </if>
+            <if test="detectionCenterID != null"> and JCZX_ID = #{detectionCenterID}</if>
+        </where>
+    </update>
+
+    <delete id="deleteDetectionMethodById" >
+        delete from xlk_jcff where JCFF_ID = #{detectionMethodID} and JCZX_ID = #{detectionCenterID}
+    </delete>
+
+    <delete id="deleteDetectionMethodByIds" >
+        delete from xlk_jcff where   JCFF_ID in
+        <foreach item="detectionMethodID" collection="detectionMethodIDs" open="(" separator="," close=")">
+            #{detectionMethodID}
+        </foreach>
+        and JCZX_ID = #{detectionCenterID}
+    </delete>
+</mapper>

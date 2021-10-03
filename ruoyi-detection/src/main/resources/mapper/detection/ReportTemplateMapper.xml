@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.detection.mapper.ReportTemplateMapper">
+    
+    <resultMap type="ReportTemplate" id="ReportTemplateResult">
+        <result property="reportTemID"    column="BGMB_ID"    />
+        <result property="reportTemName"    column="BGMB_MC"    />
+        <result property="reportTemURL"    column="BGMB_URL"    />
+        <result property="LaboratoryID"    column="BGMB_JCZXID"    />
+        <result property="operatorID"    column="BGMB_CZYID"    />
+        <result property="operatorTime"    column="BGMB_CZSJ"    />
+        <result property="remark"    column="BZ"    />
+    </resultMap>
+
+    <sql id="selectReportTemplateVo">
+        select BGMB_ID, BGMB_MC, BGMB_URL, BGMB_JCZXID, BGMB_CZYID, BGMB_CZSJ, BZ from xt_bgmb
+    </sql>
+
+    <select id="selectReportTemplateList" parameterType="ReportTemplate" resultMap="ReportTemplateResult">
+        <include refid="selectReportTemplateVo"/>
+        <where>  
+            <if test="reportTemID != null "> and BGMB_ID = #{reportTemID}</if>
+            <if test="reportTemName != null  and reportTemName != ''"> and BGMB_MC = #{reportTemName}</if>
+            <if test="reportTemURL != null  and reportTemURL != ''"> and BGMB_URL = #{reportTemURL}</if>
+            <if test="LaboratoryID != null "> and BGMB_JCZXID = #{LaboratoryID}</if>
+            <if test="operatorID != null "> and BGMB_CZYID = #{operatorID}</if>
+            <if test="operatorTime != null "> and BGMB_CZSJ = #{operatorTime}</if>
+            <if test="remark != null  and remark != ''"> and BZ = #{remark}</if>
+        </where>
+    </select>
+
+    <resultMap type="ReportTemplateVO" id="ReportTemplateVoResult">
+        <result property="reportTemID"    column="BGMB_ID"    />
+        <result property="reportTemName"    column="BGMB_MC"    />
+        <result property="reportTemURL"    column="BGMB_URL"    />
+        <result property="LaboratoryID"    column="BGMB_JCZXID"    />
+        <result property="operatorID"    column="BGMB_CZYID"    />
+        <result property="operatorTime"    column="BGMB_CZSJ"    />
+        <result property="remark"    column="BZ"    />
+        <result property="LaboratoryName"    column="JCZX_MC"    />
+        <result property="LaboratoryAddress"    column="JCZX_DZ"    />
+        <result property="operatorName"    column="YH_NC"    />
+
+    </resultMap>
+
+
+    <sql id="selectReportTemplateVoVo">
+    select BGMB_ID,  BGMB_URL, BGMB_JCZXID, BGMB_CZYID ,BGMB_MC ,JCZX_MC ,JCZX_DZ,YH_NC ,BGMB_CZSJ,xt_bgmb.BZ
+     from xt_bgmb left join xt_jczx on xt_bgmb.BGMB_JCZXID=xt_jczx.JCZX_ID left join xt_yh on
+    xt_bgmb.BGMB_CZYID=xt_yh.YH_ID
+    </sql>
+
+    <select id="selectReportTemplateVOList" parameterType="ReportTemplateVO" resultMap="ReportTemplateVoResult">
+        <include refid="selectReportTemplateVoVo"/>
+        <where>
+            <if test="reportTemID != null "> and BGMB_ID = #{reportTemID}</if>
+            <if test="reportTemName != null  and reportTemName != ''"> and BGMB_MC = #{reportTemName}</if>
+            <if test="reportTemURL != null  and reportTemURL != ''"> and BGMB_URL = #{reportTemURL}</if>
+            <if test="LaboratoryID != null "> and BGMB_JCZXID = #{LaboratoryID}</if>
+            <if test="operatorID != null "> and BGMB_CZYID = #{operatorID}</if>
+            <if test="operatorTime != null "> and BGMB_CZSJ = #{operatorTime}</if>
+            <if test="remark != null  and remark != ''"> and BZ = #{remark}</if>
+            <if test="operatorName != null  and operatorName != ''"> and YH_NC = #{operatorName}</if>
+            <if test="LaboratoryAddress != null  and LaboratoryAddress != ''"> and JCZX_DZ = #{LaboratoryAddress}</if>
+        </where>
+    </select>
+    
+    <select id="selectReportTemplateById" parameterType="Long" resultMap="ReportTemplateResult">
+        <include refid="selectReportTemplateVo"/>
+        where BGMB_ID = #{reportTemID}
+    </select>
+        
+    <insert id="insertReportTemplate" parameterType="ReportTemplate">
+        insert into xt_bgmb
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportTemID != null">BGMB_ID,</if>
+            <if test="reportTemName != null and reportTemName != ''">BGMB_MC,</if>
+            <if test="reportTemURL != null and reportTemURL != ''">BGMB_URL,</if>
+            <if test="LaboratoryID != null">BGMB_JCZXID,</if>
+            <if test="operatorID != null">BGMB_CZYID,</if>
+            <if test="operatorTime != null">BGMB_CZSJ,</if>
+            <if test="remark != null">BZ,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportTemID != null">#{reportTemID},</if>
+            <if test="reportTemName != null and reportTemName != ''">#{reportTemName},</if>
+            <if test="reportTemURL != null and reportTemURL != ''">#{reportTemURL},</if>
+            <if test="LaboratoryID != null">#{LaboratoryID},</if>
+            <if test="operatorID != null">#{operatorID},</if>
+            <if test="operatorTime != null">#{operatorTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateReportTemplate" parameterType="ReportTemplate">
+        update xt_bgmb
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportTemName != null and reportTemName != ''">BGMB_MC = #{reportTemName},</if>
+            <if test="reportTemURL != null and reportTemURL != ''">BGMB_URL = #{reportTemURL},</if>
+            <if test="LaboratoryID != null">BGMB_JCZXID = #{LaboratoryID},</if>
+            <if test="operatorID != null">BGMB_CZYID = #{operatorID},</if>
+            <if test="operatorTime != null">BGMB_CZSJ = #{operatorTime},</if>
+            <if test="remark != null">BZ = #{remark},</if>
+        </trim>
+        where BGMB_ID = #{reportTemID}
+    </update>
+
+    <delete id="deleteReportTemplateById" parameterType="Long">
+        delete from xt_bgmb where BGMB_ID = #{reportTemID}
+    </delete>
+
+    <delete id="deleteReportTemplateByIds" parameterType="String">
+        delete from xt_bgmb where BGMB_ID in 
+        <foreach item="reportTemID" collection="array" open="(" separator="," close=")">
+            #{reportTemID}
+        </foreach>
+    </delete>
+</mapper>
